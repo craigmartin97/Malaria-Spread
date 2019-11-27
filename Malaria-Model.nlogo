@@ -9,6 +9,7 @@ turtles-own
 globals
 [
   %infected ;; percentage of population that is infected with malaria
+  %healthy ;; percentage of population that is not infected with malaria
   mosquito-lifespan ;; lifespan of a mosquito
   human-lifespan ;; lifespa of a human
   human-capacity ;; number of turtles in the world at a time
@@ -20,7 +21,9 @@ to setup
   clear-all
   setup-variables ;; setup vars
   setup-turtles ;; setup turtles
+  update-variables
   update-display ;; update the turtles and display
+
   reset-ticks
 end
 
@@ -43,8 +46,10 @@ to setup-turtles
     get-healthy
     set is-bug? false ;; humans are not bugs, they can be infected with malaria from the bugs
   ]
+
   ask n-of 10 turtles
   [get-infected]
+
   create-turtles number-mosquitoes
   [
     setxy random-xcor random-ycor
@@ -65,6 +70,30 @@ to get-infected
   set infected? true
 end
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Start and move the turtles around;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; start the model generation
+to go
+  ask turtles
+  [
+    ;move
+    rt random 100
+    lt random 100
+    fd 1
+  ]
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Updators;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
 ;; update the display to chage the humans and bugs colours accordingly
 ;; if the human is healthy green, infected red, bugs are brown.
 to update-display
@@ -76,22 +105,11 @@ to update-display
   ]
 end
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Start and move the turtles around;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; start the model generation
-to go
-  ask turtles
-  [
-    rt random 100
-    lt random 100
-    fd 1
-  ]
+to update-variables
+  set %infected (count turtles with [infected? = true] / count turtles with [not is-bug?]) * 100
+  set %healthy (count turtles with [infected? = false] / count turtles with [not is-bug?]) * 100
 end
+
 
 
 @#$#@#$#@
@@ -148,7 +166,7 @@ number-people
 number-people
 2
 human-capacity
-46.0
+97.0
 1
 1
 NIL
@@ -180,11 +198,33 @@ number-mosquitoes
 number-mosquitoes
 0
 mosquitoes-capacity
-51.0
+121.0
 1
 1
 NIL
 HORIZONTAL
+
+MONITOR
+381
+397
+452
+442
+NIL
+%infected
+2
+1
+11
+
+MONITOR
+477
+398
+544
+443
+NIL
+%healthy
+2
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
