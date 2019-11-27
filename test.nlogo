@@ -1,16 +1,75 @@
+breed [ humans human ]
+breed [ mosquitoes mosquito ]
+
+turtles-own [
+  infected?
+]
+
+mosquitoes-own [
+  attached?
+]
+
 to setup
   clear-all
-  create-turtles 150
+
+  create-mosquitoes initial-mosquitoes
   [
+    set color yellow
+    set size 1
+    setxy random-xcor random-ycor
+    set attached? false
+    set infected? (who < initial-mosquitoes * (initial-percent-mosquitoes-infected / 100))
+    ifelse infected?
+      [ set color red ]
+      [ set color yellow ]
+  ]
+
+  create-humans initial-humans
+  [
+    set color green
+    set size 3
+    set infected? false
     setxy random-xcor random-ycor
   ]
+
+  set-default-shape humans "person"
+  set-default-shape mosquitoes "ant 2"
 end
 
 to go
   ask turtles
   [
-    forward 1
+    forward 3
+    right 2
   ]
+  ask mosquitoes
+    [ if not attached?
+      [ attach ] ]
+  ask mosquitoes
+    [ if attached?
+      [ unattach ] ]
+end
+
+;; TODO add chance based on slider. Separate infection into a different method?
+to attach
+  let potential-human one-of (humans-at 1 1)
+
+  if potential-human != nobody
+    [ ask potential-human [ set infected? true ]
+      ask potential-human [ set color red ] ]
+end
+
+to unattach
+  ;;TODO
+end
+
+
+to-report infected-mosquitoes
+  report (count mosquitoes with [infected?])
+end
+
+to-report infected-humans
+  report (count humans with [infected?])
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -58,9 +117,9 @@ NIL
 1
 
 BUTTON
-470
+469
 218
-533
+532
 251
 NIL
 go
@@ -73,6 +132,88 @@ NIL
 NIL
 NIL
 1
+
+SLIDER
+336
+289
+593
+322
+initial-percent-mosquitoes-infected
+initial-percent-mosquitoes-infected
+0
+100
+50.0
+1
+1
+%
+HORIZONTAL
+
+SLIDER
+335
+341
+592
+374
+initial-mosquitoes
+initial-mosquitoes
+1
+20
+10.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+336
+390
+593
+423
+initial-humans
+initial-humans
+1
+20
+20.0
+1
+1
+NIL
+HORIZONTAL
+
+MONITOR
+335
+143
+461
+188
+Infected Mosquitoes
+infected-mosquitoes
+17
+1
+11
+
+SLIDER
+336
+441
+594
+474
+infection-chance
+infection-chance
+0
+100
+50.0
+1
+1
+%
+HORIZONTAL
+
+MONITOR
+337
+206
+463
+251
+Infected Humans
+infected-humans
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -120,6 +261,21 @@ airplane
 true
 0
 Polygon -7500403 true true 150 0 135 15 120 60 120 105 15 165 15 195 120 180 135 240 105 270 120 285 150 270 180 285 210 270 165 240 180 180 285 195 285 165 180 105 180 60 165 15
+
+ant 2
+true
+0
+Polygon -7500403 true true 150 19 120 30 120 45 130 66 144 81 127 96 129 113 144 134 136 185 121 195 114 217 120 255 135 270 165 270 180 255 188 218 181 195 165 184 157 134 170 115 173 95 156 81 171 66 181 42 180 30
+Polygon -7500403 true true 150 167 159 185 190 182 225 212 255 257 240 212 200 170 154 172
+Polygon -7500403 true true 161 167 201 150 237 149 281 182 245 140 202 137 158 154
+Polygon -7500403 true true 155 135 185 120 230 105 275 75 233 115 201 124 155 150
+Line -7500403 true 120 36 75 45
+Line -7500403 true 75 45 90 15
+Line -7500403 true 180 35 225 45
+Line -7500403 true 225 45 210 15
+Polygon -7500403 true true 145 135 115 120 70 105 25 75 67 115 99 124 145 150
+Polygon -7500403 true true 139 167 99 150 63 149 19 182 55 140 98 137 142 154
+Polygon -7500403 true true 150 167 141 185 110 182 75 212 45 257 60 212 100 170 146 172
 
 arrow
 true
@@ -291,6 +447,25 @@ Rectangle -7500403 true true 127 79 172 94
 Polygon -7500403 true true 195 90 240 150 225 180 165 105
 Polygon -7500403 true true 105 90 60 150 75 180 135 105
 
+person doctor
+false
+0
+Polygon -7500403 true true 105 90 120 195 90 285 105 300 135 300 150 225 165 300 195 300 210 285 180 195 195 90
+Polygon -13345367 true false 135 90 150 105 135 135 150 150 165 135 150 105 165 90
+Polygon -7500403 true true 105 90 60 195 90 210 135 105
+Polygon -7500403 true true 195 90 240 195 210 210 165 105
+Circle -7500403 true true 110 5 80
+Rectangle -7500403 true true 127 79 172 94
+Polygon -1 true false 105 90 60 195 90 210 114 156 120 195 90 270 210 270 180 195 186 155 210 210 240 195 195 90 165 90 150 150 135 90
+Line -16777216 false 150 148 150 270
+Line -16777216 false 196 90 151 149
+Line -16777216 false 104 90 149 149
+Circle -1 true false 180 0 30
+Line -16777216 false 180 15 120 15
+Line -16777216 false 150 195 165 195
+Line -16777216 false 150 240 165 240
+Line -16777216 false 150 150 165 150
+
 plant
 false
 0
@@ -416,7 +591,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.0.1
+NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
