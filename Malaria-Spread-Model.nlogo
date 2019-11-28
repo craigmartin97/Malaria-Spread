@@ -45,6 +45,8 @@ to go
     ;lt random 100
     ;fd 1
   ]
+
+  ;TODO: add ask humans if there infected? to go to move to the hospital
   update-display
   tick
 end
@@ -179,7 +181,7 @@ human-capacity
 human-capacity
 2
 100
-49.0
+54.0
 1
 1
 NIL
@@ -194,7 +196,7 @@ mosquitoes-capacity
 mosquitoes-capacity
 2
 100
-19.0
+55.0
 1
 1
 NIL

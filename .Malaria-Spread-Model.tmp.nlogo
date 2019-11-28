@@ -40,6 +40,10 @@ end
 to go
   ask turtles[
     move-to-empty-one-of world-patches
+    ;move randomly, not needed as move all over
+    ;rt random 100
+    ;lt random 100
+    ;fd 1
 
   ]
   update-display
@@ -176,7 +180,7 @@ human-capacity
 human-capacity
 2
 100
-49.0
+54.0
 1
 1
 NIL
@@ -191,7 +195,7 @@ mosquitoes-capacity
 mosquitoes-capacity
 2
 100
-19.0
+55.0
 1
 1
 NIL
