@@ -36,6 +36,19 @@ to setup
   reset-ticks
 end
 
+;start simulation
+to go
+  ask turtles[
+    move-to-empty-one-of world-patches
+    ;move randomly, not needed as move all over
+    ;rt random 100
+    ;lt random 100
+    ;fd 1
+  ]
+  update-display
+  tick
+end
+
 ;; create the world enviroment, world and hospitals
 to create-world
   ;; create the 'world'
@@ -216,6 +229,23 @@ inital-mosquitoes-infected
 1
 NIL
 HORIZONTAL
+
+BUTTON
+92
+50
+155
+83
+NIL
+go
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?

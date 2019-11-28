@@ -36,6 +36,16 @@ to setup
   reset-ticks
 end
 
+;start simulation
+to go
+  ask turtles[
+    move-to-empty-one-of world-patches
+
+  ]
+  update-display
+  tick
+end
+
 ;; create the world enviroment, world and hospitals
 to create-world
   ;; create the 'world'
@@ -57,6 +67,7 @@ to create-agents
     move-to-empty-one-of world-patches
     set size 1.2
     set shape "person"
+    set infected? false
     ;set infected? (who < human-capacity * (inital-humans-infected / 100))
   ]
 
@@ -65,12 +76,15 @@ to create-agents
     move-to-empty-one-of world-patches
     set size 0.9
     set shape "bug"
+    set infected? false
     ;set infected? (who < mosquitoes-capacity * (inital-mosquitoes-infected / 100))
   ]
 
   ask n-of (mosquitoes-capacity * (inital-mosquitoes-infected / 100)) mosquitoes
   [set infected? true]
 
+  ask n-of (human-capacity * (inital-humans-infected / 100)) humans
+  [set infected? true]
 end
 
 ;; move agents to location
@@ -192,7 +206,7 @@ inital-humans-infected
 inital-humans-infected
 0
 100
-77.0
+36.0
 1
 1
 NIL
@@ -207,11 +221,28 @@ inital-mosquitoes-infected
 inital-mosquitoes-infected
 0
 100
-85.0
+19.0
 1
 1
 NIL
 HORIZONTAL
+
+BUTTON
+92
+50
+155
+83
+NIL
+go
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
