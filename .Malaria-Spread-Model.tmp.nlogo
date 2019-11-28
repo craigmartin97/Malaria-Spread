@@ -1,158 +1,122 @@
-breed [mosquitos mosquito]
+breed [mosquitoes mosquito]
 breed [humans human]
 
-turtles-own
-[
-  infected? ;; if true, then the human is infected with malaria. Otherwise, they are healthy
-  human-age ;; how many days old the human turtle is
-  is-bug? ;; indicates if the turtle is a bug, bugs are carriers of the disease and should not be clast as infected.
-  infected-time ;; how long in days, the turtle has been infected
+;; global shared variables
+globals [
+  hospital-patches ;; patch where we show the "CROWDED" label
+  world-patches ;; path that is the free roaming world
 ]
 
-mosquitos-own
-[
-  mosquito-age ;; how old the mosquito is
+;; for humans and mosquitoes
+turtles-own[
+  age ;; how many days old the human turtle is
+  infected? ;; has malaria or not
+  sex ;; male or female
+  pregnant? ;; agent is pregnant, only females can be pregnant though.
+  lifespan
 ]
 
-; global vars
-globals
-[
-  %infected ;; percentage of population that is infected with malaria
-  %healthy ;; percentage of population that is not infected with malaria
-  mosquito-lifespan ;; lifespan of a mosquito
-  human-lifespan ;; lifespa of a human
-  human-capacity ;; number of turtles in the world at a time
-  mosquitoes-capacity ;; number of mosquito turtles in the world
-  human-population ;; current level of human population
-  mosquito-population ;; current level of mosquito population
+;; human agents only
+humans-own[
+  infected-time ;; period that the human has been infected for
+  ;; TODO: immune-time? shoud we have an immune feature, where people cannot get malaria
 ]
 
-;; setup the interace and model
+;; mosquitoes agents only
+mosquitoes-own[
+  bloodfeed ;; days until next feed, only females when pregnant.
+]
+
+;; initalize the interface and create enviroment
 to setup
   clear-all
-  setup-variables ;; setup vars
-  setup-turtles ;; setup turtles
-  update-variables
-  update-display ;; update the turtles and display
+   create-world
+
+   update-display
   reset-ticks
 end
 
-;; initalize the variables
-to setup-variables
-  set mosquito-lifespan 28 ;; mosquitoes have a max lifespan of 4 weeks (28 days)
-  set human-lifespan 61 * 365 ;; avg. life expectancy in africa is 61 years multiply by days = 61 yrs * 365 per/year = 29200
-  set human-capacity 1000 ;; 1000 turtles max in world
-  set mosquitoes-capacity 1000  ;; 1000 turtles max for mosquitoes
+;; create the world enviroment, world and hospitals
+to create-world
+  ;; create the 'world'
+  set world-patches patches with [pycor < 0 or (pxcor <  0 and pycor >= 0)]
+  ask world-patches [ set pcolor grey ]
+
+  ;; create the 'hospital'
+  set hospital-patches patches with [pxcor > 0 and pycor > 0]
+  ask hospital-patches [ set pcolor blue ]
+
+  ;;create humans and mosquitoes
+  create-agents
 end
 
-;; create the turtles
-to setup-turtles
-  create-turtles number-people
-  [
-    setxy random-xcor random-ycor
-    set human-age random human-lifespan
+;; initalize the humans and bug agents
+to create-agents
+  ; create humans
+  create-humans human-capacity [
+    move-to-empty-one-of world-patches
     set size 1.2
     set shape "person"
-    get-healthy
-    set is-bug? false ;; humans are not bugs, they can be infected with malaria from the bugs
+    ;set infected? (who < human-capacity * (inital-humans-infected / 100))
   ]
 
-  ask n-of 10 turtles
-  [get-infected]
-
-  create-turtles number-mosquitoes
-  [
-    setxy random-xcor random-ycor
+  ; create mosquitoes
+  create-mosquitoes mosquitoes-capacity[
+    move-to-empty-one-of world-patches
     set size 0.9
     set shape "bug"
-    set color brown
-    set is-bug? true ;; these are the bugs, they carry malaria
+    ;set infected? (who < mosquitoes-capacity * (inital-mosquitoes-infected / 100))
+  ]
+
+  ask n-of (mosquitoes-capacity * (inital-mosquitoes-infected / 100)) mosquitoes
+  [set infected? true]
+
+end
+
+;; move agents to location
+to move-to-empty-one-of [locations]  ;; turtle procedure
+  move-to one-of locations
+  while [any? other turtles-here] [
+    move-to one-of locations
   ]
 end
 
-;; Make the human healthy
-to get-healthy
-  set infected? false
-end
-
-;; Make the human infected
-to get-infected
-  set infected? true
-end
-
-;; human-to-human transmition is low.
-;; only through blood transfusions and organ transplants can malaria be transmitted.
-;; there is a very low possibility that this would occur but it can.
-to infect-human-to-human
-  ask other turtles-here with [infected? = false and is-bug? = false]
-  [if random 1000 < 1[
-    get-infected
-  ]]
-end
-
-;; Humans can transmit malaria through reproduction.
-;; Only female humans can reproduce.
-to infect-reproduction
-end
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Start and move the turtles around;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; start the model generation
-to go
-  ask turtles
-  [
-    ;move
-    rt random 100
-    lt random 100
-    fd 1
-
-    if infected? = true and is-bug? = false [infect-human-to-human]
-  ]
-  update-variables
-  update-display
-  tick
-end
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Updators;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-;; update the display to chage the humans and bugs colours accordingly
-;; if the human is healthy green, infected red, bugs are brown.
+;; update the display, to change the humans and bugs colors
 to update-display
-  ask turtles
-  [
-    ifelse is-bug?
-      [set color brown] ;; it is a bug
-      [set color ifelse-value infected? [ red ] [ ifelse-value false [ grey ] [ green ] ] ] ;; it is a human
+  ;; change human colors
+  ask humans[
+    ifelse infected?
+      [set color red]
+      [set color green]
+  ]
+
+  ;; change mosquitoes colors
+  ask mosquitoes[
+    ifelse infected?
+      [set color red]
+      [set color brown]
   ]
 end
 
-to update-variables
-  set human-population count turtles with [is-bug? = false]
-  set mosquito-population count turtles with [is-bug? = true]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;Questions/Unknowns;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  set %infected (count turtles with [infected? = true] / count turtles with [not is-bug?]) * 100
-  set %healthy (count turtles with [infected? = false] / count turtles with [not is-bug?]) * 100
-end
 
-
+; calculate drug resistance? preportion of infections treated by drug, number of malaria clones per number
 @#$#@#$#@
 GRAPHICS-WINDOW
-657
+210
 10
-1413
-767
+1067
+868
 -1
 -1
-22.67
+25.73
 1
 10
 1
@@ -173,11 +137,11 @@ ticks
 30.0
 
 BUTTON
-385
-172
-449
-205
-Setup
+17
+50
+80
+83
+NIL
 setup
 NIL
 1
@@ -190,95 +154,64 @@ NIL
 1
 
 SLIDER
-385
-248
-557
-281
-number-people
-number-people
-2
+17
+97
+189
+130
 human-capacity
-422.0
+human-capacity
+2
+100
+49.0
 1
 1
 NIL
 HORIZONTAL
-
-BUTTON
-455
-172
-518
-205
-Go
-go
-T
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
 
 SLIDER
-385
-211
-557
-244
-number-mosquitoes
-number-mosquitoes
-0
+18
+137
+190
+170
 mosquitoes-capacity
-121.0
+mosquitoes-capacity
+2
+100
+19.0
 1
 1
 NIL
 HORIZONTAL
 
-MONITOR
-381
-397
-452
-442
-NIL
-%infected
-2
-1
-11
-
-MONITOR
-462
-396
-529
-441
-NIL
-%healthy
-2
-1
-11
-
-MONITOR
-381
-501
-507
-546
-NIL
-human-population
+SLIDER
+13
+274
+206
+307
+inital-humans-infected
+inital-humans-infected
 0
+100
+77.0
 1
-11
-
-MONITOR
-381
-449
-506
-494
+1
 NIL
-mosquito-population
+HORIZONTAL
+
+SLIDER
+15
+316
+207
+349
+inital-mosquitoes-infected
+inital-mosquitoes-infected
 0
+100
+85.0
 1
-11
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
