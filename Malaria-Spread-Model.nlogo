@@ -19,6 +19,7 @@ turtles-own[
 ;; human agents only
 humans-own[
   infected-time ;; period that the human has been infected for
+  thinks-infected? ;; does the human know that they are infected?
   ;; TODO: immune-time? shoud we have an immune feature, where people cannot get malaria
 ]
 
@@ -39,7 +40,9 @@ end
 ;start simulation
 to go
   ask turtles[
-    move-to-empty-one-of world-patches
+    move
+
+    ;move-to-empty-one-of world-patches
     ;move randomly, not needed as move all over
     ;rt random 100
     ;lt random 100
@@ -70,6 +73,7 @@ to create-agents
     set size 1
     set shape "person"
     set infected? false
+    set thinks-infected? false
     ;set infected? (who < human-capacity * (inital-humans-infected / 100))
   ]
 
@@ -88,6 +92,20 @@ to create-agents
   ask n-of (human-capacity * (inital-humans-infected / 100)) humans
   [set infected? true]
 end
+
+;; Handles which movement methods should be called for turtles.
+to move
+  ask mosquitoes [
+    move-to one-of world-patches
+  ]
+
+  ask humans [
+    ifelse infected? and thinks-infected?
+      [ move-to-empty-one-of hospital-patches ]
+      [ move-to-empty-one-of world-patches ]
+  ]
+end
+
 
 ;; move turtles to location
 to move-to-empty-one-of [locations]  ;; turtle procedure
@@ -146,8 +164,8 @@ GRAPHICS-WINDOW
 16
 -16
 16
-0
-0
+1
+1
 1
 ticks
 30.0
@@ -178,7 +196,7 @@ human-capacity
 human-capacity
 2
 100
-54.0
+100.0
 1
 1
 NIL
