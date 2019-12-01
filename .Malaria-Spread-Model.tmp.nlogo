@@ -19,13 +19,13 @@ turtles-own[
 ;; human agents only
 humans-own[
   infected-time ;; period that the human has been infected for
-   ;; does the human know that they are infected?
+  thinks-infected? ;; does the human know that they are infected?
   ;; TODO: immune-time? shoud we have an immune feature, where people cannot get malaria
 ]
 
 ;; mosquitoes agents only
 mosquitoes-own[
-  bloodfeed ;; days until next feed, only females when pregnant.
+  bloodfeed-counter ;; days until next feed, only females when pregnant.
 ]
 
 ;; initalize the interface and create enviroment
@@ -41,6 +41,7 @@ end
 to go
   ask turtles[
     move
+    bloodfeed
 
     ;move-to-empty-one-of world-patches
     ;move randomly, not needed as move all over
@@ -52,6 +53,10 @@ to go
   ;TODO: add ask humans if there infected? to go to move to the hospital
   update-display
   tick
+end
+
+to step
+  go
 end
 
 ;; create the world enviroment, world and hospitals
@@ -73,7 +78,7 @@ to create-agents
     set size 1
     set shape "person"
     set infected? false
-    set knows-infected? false
+    set thinks-infected? false
     ;set infected? (who < human-capacity * (inital-humans-infected / 100))
   ]
 
@@ -83,6 +88,8 @@ to create-agents
     set size 0.7
     set shape "bug"
     set infected? false
+    set pregnant? true
+    set sex "f"
     ;set infected? (who < mosquitoes-capacity * (inital-mosquitoes-infected / 100))
   ]
 
@@ -95,14 +102,14 @@ end
 
 ;; Handles which movement methods should be called for turtles.
 to move
-  ask mosquitoes [
-    move-to one-of world-patches
-  ]
-
   ask humans [
-    ifelse infected? and knows-infected?
+    ifelse infected? and thinks-infected?
       [ move-to-empty-one-of hospital-patches ]
       [ move-to-empty-one-of world-patches ]
+  ]
+
+  ask mosquitoes [
+    move-to one-of world-patches
   ]
 end
 
@@ -114,6 +121,24 @@ to move-to-empty-one-of [locations]  ;; turtle procedure
     move-to one-of locations
   ]
 end
+
+to bloodfeed
+  ask mosquitoes with [ (sex = "f") and pregnant? and (any? humans-here) ] [
+    ; Do something related to the pregnancy/eggs/birthing here?
+
+    if infected? [
+      ask (one-of humans-here)[
+        set infected? true
+      ]
+    ]
+
+    ;if (any? (humans-on self) with [infected?]) [
+    ;  set infected? true
+    ;]
+  ]
+end
+
+
 
 ;; update the display, to change the humans and bugs colors
 to update-display
@@ -130,6 +155,17 @@ to update-display
       [set color red]
       [set color brown]
   ]
+end
+
+
+;;; Monitors
+
+to-report infected-humans-count
+  report (count humans with [infected?])
+end
+
+to-report infected-mosquitoes-count
+  report (count mosquitoes with [infected?])
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -196,7 +232,7 @@ human-capacity
 human-capacity
 2
 100
-100.0
+26.0
 1
 1
 NIL
@@ -211,7 +247,7 @@ mosquitoes-capacity
 mosquitoes-capacity
 2
 100
-55.0
+1.0
 1
 1
 NIL
@@ -241,7 +277,7 @@ inital-mosquitoes-infected
 inital-mosquitoes-infected
 0
 100
-19.0
+100.0
 1
 1
 NIL
@@ -255,6 +291,45 @@ BUTTON
 NIL
 go
 T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+MONITOR
+14
+426
+122
+471
+Infected Humans
+infected-humans-count
+17
+1
+11
+
+MONITOR
+13
+483
+139
+528
+Infected Mosquitoes
+infected-mosquitoes-count
+17
+1
+11
+
+BUTTON
+93
+11
+156
+44
+Step
+step
+NIL
 1
 T
 OBSERVER
