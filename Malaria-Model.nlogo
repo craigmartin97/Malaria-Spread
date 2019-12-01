@@ -1,85 +1,158 @@
-breed [ humans human ]
-breed [ mosquitoes mosquito ]
+breed [mosquitos mosquito]
+breed [humans human]
 
-turtles-own [
-  infected?
+turtles-own
+[
+  infected? ;; if true, then the human is infected with malaria. Otherwise, they are healthy
+  human-age ;; how many days old the human turtle is
+  is-bug? ;; indicates if the turtle is a bug, bugs are carriers of the disease and should not be clast as infected.
+  infected-time ;; how long in days, the turtle has been infected
 ]
 
-mosquitoes-own [
-  attached?
+mosquitos-own
+[
+  mosquito-age ;; how old the mosquito is
 ]
 
+; global vars
+globals
+[
+  %infected ;; percentage of population that is infected with malaria
+  %healthy ;; percentage of population that is not infected with malaria
+  mosquito-lifespan ;; lifespan of a mosquito
+  human-lifespan ;; lifespa of a human
+  human-capacity ;; number of turtles in the world at a time
+  mosquitoes-capacity ;; number of mosquito turtles in the world
+  human-population ;; current level of human population
+  mosquito-population ;; current level of mosquito population
+]
+
+;; setup the interace and model
 to setup
   clear-all
-
-  create-mosquitoes initial-mosquitoes
-  [
-    set color yellow
-    set size 1
-    setxy random-xcor random-ycor
-    set attached? false
-    set infected? (who < initial-mosquitoes * (initial-percent-mosquitoes-infected / 100))
-    ifelse infected?
-      [ set color red ]
-      [ set color yellow ]
-  ]
-
-  create-humans initial-humans
-  [
-    set color green
-    set size 3
-    set infected? false
-    setxy random-xcor random-ycor
-  ]
-
-  set-default-shape humans "person"
-  set-default-shape mosquitoes "ant 2"
+  setup-variables ;; setup vars
+  setup-turtles ;; setup turtles
+  update-variables
+  update-display ;; update the turtles and display
+  reset-ticks
 end
 
+;; initalize the variables
+to setup-variables
+  set mosquito-lifespan 28 ;; mosquitoes have a max lifespan of 4 weeks (28 days)
+  set human-lifespan 61 * 365 ;; avg. life expectancy in africa is 61 years multiply by days = 61 yrs * 365 per/year = 29200
+  set human-capacity 1000 ;; 1000 turtles max in world
+  set mosquitoes-capacity 1000  ;; 1000 turtles max for mosquitoes
+end
+
+;; create the turtles
+to setup-turtles
+  create-turtles number-people
+  [
+    setxy random-xcor random-ycor
+    set human-age random human-lifespan
+    set size 1.2
+    set shape "person"
+    get-healthy
+    set is-bug? false ;; humans are not bugs, they can be infected with malaria from the bugs
+  ]
+
+  ask n-of 10 turtles
+  [get-infected]
+
+  create-turtles number-mosquitoes
+  [
+    setxy random-xcor random-ycor
+    set size 0.9
+    set shape "bug"
+    set color brown
+    set is-bug? true ;; these are the bugs, they carry malaria
+  ]
+end
+
+;; Make the human healthy
+to get-healthy
+  set infected? false
+end
+
+;; Make the human infected
+to get-infected
+  set infected? true
+end
+
+;; human-to-human transmition is low.
+;; only through blood transfusions and organ transplants can malaria be transmitted.
+;; there is a very low possibility that this would occur but it can.
+to infect-human-to-human
+  ask other turtles-here with [infected? = false and is-bug? = false]
+  [if random 1000 < 1[
+    get-infected
+  ]]
+end
+
+;; Humans can transmit malaria through reproduction.
+;; Only female humans can reproduce.
+to infect-reproduction
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Start and move the turtles around;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; start the model generation
 to go
   ask turtles
   [
-    forward 3
-    right 2
+    ;move
+    rt random 100
+    lt random 100
+    fd 1
+
+    if infected? = true and is-bug? = false [infect-human-to-human]
   ]
-  ask mosquitoes
-    [ if not attached?
-      [ attach ] ]
-  ask mosquitoes
-    [ if attached?
-      [ unattach ] ]
+  update-variables
+  update-display
+  tick
 end
 
-;; TODO add chance based on slider. Separate infection into a different method?
-to attach
-  let potential-human one-of (humans-at 1 1)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;Updators;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  if potential-human != nobody
-    [ ask potential-human [ set infected? true ]
-      ask potential-human [ set color red ] ]
+
+;; update the display to chage the humans and bugs colours accordingly
+;; if the human is healthy green, infected red, bugs are brown.
+to update-display
+  ask turtles
+  [
+    ifelse is-bug?
+      [set color brown] ;; it is a bug
+      [set color ifelse-value infected? [ red ] [ ifelse-value false [ grey ] [ green ] ] ] ;; it is a human
+  ]
 end
 
-to unattach
-  ;;TODO
+to update-variables
+  set human-population count turtles with [is-bug? = false]
+  set mosquito-population count turtles with [is-bug? = true]
+
+  set %infected (count turtles with [infected? = true] / count turtles with [not is-bug?]) * 100
+  set %healthy (count turtles with [infected? = false] / count turtles with [not is-bug?]) * 100
 end
 
 
-to-report infected-mosquitoes
-  report (count mosquitoes with [infected?])
-end
-
-to-report infected-humans
-  report (count humans with [infected?])
-end
 @#$#@#$#@
 GRAPHICS-WINDOW
-631
-133
-1068
-571
+657
+10
+1413
+767
 -1
 -1
-13.0
+22.67
 1
 10
 1
@@ -100,11 +173,11 @@ ticks
 30.0
 
 BUTTON
-469
-143
-532
-176
-NIL
+385
+172
+449
+205
+Setup
 setup
 NIL
 1
@@ -116,12 +189,27 @@ NIL
 NIL
 1
 
-BUTTON
-469
-218
-532
-251
+SLIDER
+385
+248
+557
+281
+number-people
+number-people
+2
+human-capacity
+422.0
+1
+1
 NIL
+HORIZONTAL
+
+BUTTON
+455
+172
+518
+205
+Go
 go
 T
 1
@@ -134,84 +222,61 @@ NIL
 1
 
 SLIDER
-336
-289
-593
-322
-initial-percent-mosquitoes-infected
-initial-percent-mosquitoes-infected
+385
+211
+557
+244
+number-mosquitoes
+number-mosquitoes
 0
-100
-50.0
-1
-1
-%
-HORIZONTAL
-
-SLIDER
-335
-341
-592
-374
-initial-mosquitoes
-initial-mosquitoes
-1
-20
-10.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-336
-390
-593
-423
-initial-humans
-initial-humans
-1
-20
-20.0
+mosquitoes-capacity
+121.0
 1
 1
 NIL
 HORIZONTAL
 
 MONITOR
-335
-143
-461
-188
-Infected Mosquitoes
-infected-mosquitoes
-17
+381
+397
+452
+442
+NIL
+%infected
+2
 1
 11
 
-SLIDER
-336
+MONITOR
+462
+396
+529
 441
-594
-474
-infection-chance
-infection-chance
-0
-100
-50.0
+NIL
+%healthy
+2
 1
-1
-%
-HORIZONTAL
+11
 
 MONITOR
-337
-206
-463
-251
-Infected Humans
-infected-humans
-17
+381
+501
+507
+546
+NIL
+human-population
+0
+1
+11
+
+MONITOR
+381
+449
+506
+494
+NIL
+mosquito-population
+0
 1
 11
 
@@ -261,21 +326,6 @@ airplane
 true
 0
 Polygon -7500403 true true 150 0 135 15 120 60 120 105 15 165 15 195 120 180 135 240 105 270 120 285 150 270 180 285 210 270 165 240 180 180 285 195 285 165 180 105 180 60 165 15
-
-ant 2
-true
-0
-Polygon -7500403 true true 150 19 120 30 120 45 130 66 144 81 127 96 129 113 144 134 136 185 121 195 114 217 120 255 135 270 165 270 180 255 188 218 181 195 165 184 157 134 170 115 173 95 156 81 171 66 181 42 180 30
-Polygon -7500403 true true 150 167 159 185 190 182 225 212 255 257 240 212 200 170 154 172
-Polygon -7500403 true true 161 167 201 150 237 149 281 182 245 140 202 137 158 154
-Polygon -7500403 true true 155 135 185 120 230 105 275 75 233 115 201 124 155 150
-Line -7500403 true 120 36 75 45
-Line -7500403 true 75 45 90 15
-Line -7500403 true 180 35 225 45
-Line -7500403 true 225 45 210 15
-Polygon -7500403 true true 145 135 115 120 70 105 25 75 67 115 99 124 145 150
-Polygon -7500403 true true 139 167 99 150 63 149 19 182 55 140 98 137 142 154
-Polygon -7500403 true true 150 167 141 185 110 182 75 212 45 257 60 212 100 170 146 172
 
 arrow
 true
@@ -447,25 +497,6 @@ Rectangle -7500403 true true 127 79 172 94
 Polygon -7500403 true true 195 90 240 150 225 180 165 105
 Polygon -7500403 true true 105 90 60 150 75 180 135 105
 
-person doctor
-false
-0
-Polygon -7500403 true true 105 90 120 195 90 285 105 300 135 300 150 225 165 300 195 300 210 285 180 195 195 90
-Polygon -13345367 true false 135 90 150 105 135 135 150 150 165 135 150 105 165 90
-Polygon -7500403 true true 105 90 60 195 90 210 135 105
-Polygon -7500403 true true 195 90 240 195 210 210 165 105
-Circle -7500403 true true 110 5 80
-Rectangle -7500403 true true 127 79 172 94
-Polygon -1 true false 105 90 60 195 90 210 114 156 120 195 90 270 210 270 180 195 186 155 210 210 240 195 195 90 165 90 150 150 135 90
-Line -16777216 false 150 148 150 270
-Line -16777216 false 196 90 151 149
-Line -16777216 false 104 90 149 149
-Circle -1 true false 180 0 30
-Line -16777216 false 180 15 120 15
-Line -16777216 false 150 195 165 195
-Line -16777216 false 150 240 165 240
-Line -16777216 false 150 150 165 150
-
 plant
 false
 0
@@ -591,7 +622,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.1.1
+NetLogo 6.0.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
