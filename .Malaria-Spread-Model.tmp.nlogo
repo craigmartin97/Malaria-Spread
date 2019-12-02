@@ -40,17 +40,10 @@ end
 ;start simulation
 to go
   ask turtles[
+    get-older ; inc turtle age and check if should die
     move
     bloodfeed
-
-    ;move-to-empty-one-of world-patches
-    ;move randomly, not needed as move all over
-    ;rt random 100
-    ;lt random 100
-    ;fd 1
   ]
-
-  ;TODO: add ask humans if there infected? to go to move to the hospital
   update-display
   tick
 end
@@ -79,6 +72,8 @@ to create-agents
     set shape "person"
     set infected? false
     set thinks-infected? false
+    set lifespan 61 * 365 ; avg lifespace (61yrs in africa) * num of days = 22,265
+    set age random lifespan
     ;set infected? (who < human-capacity * (inital-humans-infected / 100))
   ]
 
@@ -90,6 +85,7 @@ to create-agents
     set infected? false
     set pregnant? true
     set sex "f"
+    set lifespan 3
     ;set infected? (who < mosquitoes-capacity * (inital-mosquitoes-infected / 100))
   ]
 
@@ -157,6 +153,12 @@ to update-display
   ]
 end
 
+; inncrease the age of the turtle
+to get-older
+  set age age + 1 ;; inc age
+  if age > lifespan [ die ]
+end
+
 
 ;;; Monitors
 
@@ -182,8 +184,8 @@ end
 GRAPHICS-WINDOW
 210
 10
-1067
-868
+1089
+890
 -1
 -1
 26.4
@@ -232,7 +234,7 @@ human-capacity
 human-capacity
 2
 100
-26.0
+68.0
 1
 1
 NIL
@@ -247,7 +249,7 @@ mosquitoes-capacity
 mosquitoes-capacity
 2
 100
-1.0
+18.0
 1
 1
 NIL
