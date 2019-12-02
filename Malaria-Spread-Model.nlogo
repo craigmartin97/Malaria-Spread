@@ -41,6 +41,11 @@ end
 to go
   ask turtles[
     get-older ; inc turtle age and check if should die
+    inc-infected-time ;; if infected inc infected time
+
+    die-naturally
+    recover-or-die
+
     move
     bloodfeed
   ]
@@ -74,6 +79,7 @@ to create-agents
     set thinks-infected? false
     set lifespan 61 * 365 ; avg lifespace (61yrs in africa) * num of days = 22,265
     set age random lifespan
+    set infected-time 0
     ;set infected? (who < human-capacity * (inital-humans-infected / 100))
   ]
 
@@ -94,7 +100,10 @@ to create-agents
   [set infected? true]
 
   ask n-of (human-capacity * (inital-humans-infected / 100)) humans
-  [set infected? true]
+  [
+    set infected? true
+    set infected-time random 100 ;as infected assign a random infected time value to begin with
+  ]
 end
 
 ;; Handles which movement methods should be called for turtles.
@@ -154,10 +163,40 @@ to update-display
   ]
 end
 
-; inncrease the age of the turtle
+
+;;; Age/Time methods
+
+; increase the age of the turtle
 to get-older
   set age age + 1 ;; inc age
+end
+
+; inc the infected time (in days) if the human is infected.
+to inc-infected-time
+  ask humans with [ (infected?) ]
+  [
+    set infected-time infected-time + 1
+  ]
+end
+
+; die of natural causes. exceeded life expectancy
+to die-naturally
   if age > lifespan [ die ]
+end
+
+; if human is infected, kill based on chance
+to recover-or-die
+  ask humans with [ (infected?) ]
+  [
+    let risk-factor 0
+    if age <= 5 * 365
+    [set risk-factor 10]
+
+    if infected-time > duration
+    [if random-float 100 > recovery-chance
+      [die]
+    ]
+  ]
 end
 
 
@@ -235,7 +274,7 @@ human-capacity
 human-capacity
 2
 100
-68.0
+96.0
 1
 1
 NIL
@@ -250,7 +289,7 @@ mosquitoes-capacity
 mosquitoes-capacity
 2
 100
-18.0
+8.0
 1
 1
 NIL
@@ -265,7 +304,7 @@ inital-humans-infected
 inital-humans-infected
 0
 100
-36.0
+7.0
 1
 1
 NIL
@@ -280,7 +319,7 @@ inital-mosquitoes-infected
 inital-mosquitoes-infected
 0
 100
-100.0
+15.0
 1
 1
 NIL
@@ -341,6 +380,36 @@ NIL
 NIL
 NIL
 1
+
+SLIDER
+16
+185
+207
+218
+duration
+duration
+0
+22265
+4430.0
+5
+1
+NIL
+HORIZONTAL
+
+SLIDER
+19
+226
+191
+259
+recovery-chance
+recovery-chance
+0
+100
+87.0
+1
+1
+%
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
