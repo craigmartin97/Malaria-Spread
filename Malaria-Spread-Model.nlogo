@@ -226,10 +226,10 @@ end
 ; calculate drug resistance? preportion of infections treated by drug, number of malaria clones per number
 @#$#@#$#@
 GRAPHICS-WINDOW
-210
-10
-1089
-890
+443
+11
+1322
+891
 -1
 -1
 26.4
@@ -278,7 +278,7 @@ human-capacity
 human-capacity
 2
 100
-96.0
+2.0
 1
 1
 NIL
@@ -293,7 +293,7 @@ mosquitoes-capacity
 mosquitoes-capacity
 2
 100
-8.0
+36.0
 1
 1
 NIL
@@ -311,7 +311,7 @@ inital-humans-infected
 7.0
 1
 1
-NIL
+%
 HORIZONTAL
 
 SLIDER
@@ -323,10 +323,10 @@ inital-mosquitoes-infected
 inital-mosquitoes-infected
 0
 100
-15.0
+31.0
 1
 1
-NIL
+%
 HORIZONTAL
 
 BUTTON
@@ -394,17 +394,17 @@ duration
 duration
 0
 22265
-4430.0
+635.0
 5
 1
-NIL
+days
 HORIZONTAL
 
 SLIDER
-19
-226
-191
-259
+13
+227
+205
+260
 recovery-chance
 recovery-chance
 0
@@ -425,6 +425,26 @@ healthy-humans-count
 0
 1
 11
+
+PLOT
+15
+575
+383
+871
+Populations
+days
+agents
+0.0
+100.0
+0.0
+100.0
+true
+true
+"" ""
+PENS
+"infected" 1.0 0 -2674135 true "" "plot count humans with [infected?]"
+"healthy" 1.0 0 -10899396 true "" "plot count humans with [not infected?]"
+"mosquitoes" 1.0 0 -6459832 true "" "plot count mosquitoes"
 
 @#$#@#$#@
 ## WHAT IS IT?
