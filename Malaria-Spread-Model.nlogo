@@ -446,6 +446,28 @@ PENS
 "healthy" 1.0 0 -10899396 true "" "plot count humans with [not infected?]"
 "mosquitoes" 1.0 0 -6459832 true "" "plot count mosquitoes"
 
+INPUTBOX
+278
+375
+433
+435
+min-symptoms-days
+10.0
+1
+0
+Number
+
+INPUTBOX
+279
+446
+434
+506
+max-symptoms-days
+28.0
+1
+0
+Number
+
 @#$#@#$#@
 ## WHAT IS IT?
 
