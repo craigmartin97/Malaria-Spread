@@ -42,7 +42,7 @@ end
 to go
   ask turtles[
     get-older ; inc turtle age and check if should die
-    inc-infected-time ;; if infected inc infected time
+    ;inc-infected-time ;; if infected inc infected time
 
     die-naturally
     recover-or-die
@@ -84,7 +84,6 @@ to create-agents
     set thinks-infected? false
     set lifespan 61 * 365 ; avg lifespace (61yrs in africa) * num of days = 22,265
     set age random lifespan
-    set infected-time 0
     ;set infected? (who < human-capacity * (inital-humans-infected / 100))
   ]
 
@@ -105,7 +104,10 @@ to create-agents
   [set infected? true]
 
   ask n-of (human-capacity * (inital-humans-infected / 100)) humans
-  [human-infection]
+  [
+    human-infection
+    set infected-time random 100 ;as infected assign a random infected time value to begin with
+  ]
 end
 
 ;; Handles which movement methods should be called for turtles.
@@ -195,14 +197,6 @@ end
 ; increase the age of the turtle
 to get-older
   set age age + 1 ;; inc age
-end
-
-; inc the infected time (in days) if the human is infected.
-to inc-infected-time
-  ask humans with [ (infected?) ]
-  [
-    set infected-time infected-time + 1
-  ]
 end
 
 ; die of natural causes. exceeded life expectancy
@@ -304,7 +298,7 @@ human-capacity
 human-capacity
 2
 100
-35.0
+57.0
 1
 1
 NIL
@@ -420,7 +414,7 @@ duration
 duration
 0
 22265
-635.0
+0.0
 5
 1
 days
@@ -478,7 +472,7 @@ INPUTBOX
 326
 460
 min-symptoms-days
-10.0
+1.0
 1
 0
 Number
