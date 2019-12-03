@@ -77,7 +77,7 @@ to create-world
   set hospital-patches patches with [pxcor > 0 and pycor > 0]
   ask hospital-patches [ set pcolor blue ]
 
-  set humans-chance-reproduce 40
+  set humans-chance-reproduce 70
 end
 
 ;; initalize the humans and bug agents
@@ -90,9 +90,7 @@ to create-agents
     set infected-time 0
     set infected? false
     set thinks-infected? false
-    ;set lifespan 61 * 365 ; avg lifespace (61yrs in africa) * num of days = 22,265
-
-    set lifespan ( (human-lifespan-min * 365) + random ( (human-lifespan-max * 365) - (human-lifespan-min * 365)))
+    set lifespan 61 * 365 ; avg lifespace (61yrs in africa) * num of days = 22,265
     set age random lifespan
     set pregnant? false
     set pregnancy-time 0
@@ -107,8 +105,7 @@ to create-agents
     set infected? false
     set pregnant? true
     set sex "f"
-    ;set lifespan 30
-    set lifespan ( (mosquito-lifespan-min) + random ( (mosquito-lifespan-max) - (mosquito-lifespan-min)))
+    set lifespan 30
     set age random lifespan
     ;set infected? (who < mosquitoes-capacity * (inital-mosquitoes-infected / 100))
   ]
@@ -207,12 +204,6 @@ end
 
 ;;; Age/Time methods
 
-to set-lifespan
-  set human-lifespan-min human-lifespan-min * 365
-  set human-lifespan-max human-lifespan-max * 365
-  set lifespan (human-lifespan-min + random (human-lifespan-max - human-lifespan-min))
-end
-
 ; increase the age of the turtle
 to get-older
   set age age + 1 ;; inc age
@@ -278,10 +269,6 @@ to-report healthy-humans-count
   report (count humans with [infected? = false])
 end
 
-to-report total-humans
-  report (count humans)
-end
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -295,12 +282,12 @@ end
 @#$#@#$#@
 GRAPHICS-WINDOW
 443
-10
-1324
-892
+11
+1322
+891
 -1
 -1
-26.455
+26.4
 1
 10
 1
@@ -346,7 +333,7 @@ human-capacity
 human-capacity
 2
 100
-83.0
+57.0
 1
 1
 NIL
@@ -415,10 +402,10 @@ NIL
 1
 
 MONITOR
-16
-466
-124
-511
+14
+426
+122
+471
 Infected Humans
 infected-humans-count
 17
@@ -426,10 +413,10 @@ infected-humans-count
 11
 
 MONITOR
-15
-523
-141
-568
+13
+483
+139
+528
 Infected Mosquitoes
 infected-mosquitoes-count
 17
@@ -462,7 +449,7 @@ duration
 duration
 0
 22265
-2910.0
+0.0
 5
 1
 days
@@ -477,17 +464,17 @@ recovery-chance
 recovery-chance
 0
 100
-49.0
+87.0
 1
 1
 %
 HORIZONTAL
 
 MONITOR
-17
-414
-125
-459
+15
+374
+123
+419
 Healthy Humans
 healthy-humans-count
 0
@@ -520,7 +507,7 @@ INPUTBOX
 326
 460
 min-symptoms-days
-20.0
+1.0
 1
 0
 Number
@@ -535,81 +522,6 @@ max-symptoms-days
 1
 0
 Number
-
-INPUTBOX
-1338
-12
-1493
-72
-human-lifespan-min
-50.0
-1
-0
-Number
-
-INPUTBOX
-1339
-79
-1494
-139
-human-lifespan-max
-80.0
-1
-0
-Number
-
-MONITOR
-17
-364
-125
-409
-Total Humans
-total-humans
-0
-1
-11
-
-TEXTBOX
-1503
-60
-1653
-88
-both get multiplied by 365 to represent days (In Years)
-11
-0.0
-1
-
-INPUTBOX
-1340
-146
-1495
-206
-mosquito-lifespan-min
-20.0
-1
-0
-Number
-
-INPUTBOX
-1340
-210
-1495
-270
-mosquito-lifespan-max
-30.0
-1
-0
-Number
-
-TEXTBOX
-1509
-197
-1659
-215
-In days
-11
-0.0
-1
 
 @#$#@#$#@
 ## WHAT IS IT?
