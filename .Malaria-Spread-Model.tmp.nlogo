@@ -19,6 +19,7 @@ turtles-own[
 ;; human agents only
 humans-own[
   infected-time ;; period that the human has been infected for
+  time-to-symptoms ;; period of time before human recognises symptoms.
   thinks-infected? ;; does the human know that they are infected?
   ;; TODO: immune-time? shoud we have an immune feature, where people cannot get malaria
 ]
@@ -50,7 +51,10 @@ to go
   ]
 
   ;TODO: add ask humans if there infected? to go to move to the hospital
+
   bloodfeed
+  update-infected-length
+  check-infected
   update-display
   tick
 end
@@ -77,6 +81,7 @@ to create-agents
     move-to-empty-one-of world-patches
     set size 1
     set shape "person"
+    set infected-time 0
     set infected? false
     set thinks-infected? false
     ;set infected? (who < human-capacity * (inital-humans-infected / 100))
@@ -97,7 +102,7 @@ to create-agents
   [set infected? true]
 
   ask n-of (human-capacity * (inital-humans-infected / 100)) humans
-  [set infected? true]
+  [human-infection]
 end
 
 ;; Handles which movement methods should be called for turtles.
@@ -126,14 +131,14 @@ to bloodfeed
   ask mosquitoes with [ (sex = "f") and pregnant? and (any? humans-here) ] [
     ; Do something related to the pregnancy/eggs/birthing here?
 
-    i
+    infection
   ]
 end
 
 to infection
   if infected? [
     ask (one-of humans-here)[
-      set infected? true
+      human-infection
     ]
   ]
 
@@ -142,6 +147,26 @@ to infection
   ]
 end
 
+to human-infection
+  set infected? true
+  set time-to-symptoms (min-symptoms-days + random (max-symptoms-days - min-symptoms-days))
+end
+
+to update-infected-length
+  ask humans [
+    ifelse infected?
+      [ set infected-time (infected-time + 1) ]
+      [ set infected-time 0 ]
+  ]
+end
+
+to check-infected
+  ask humans [
+    ifelse infected-time >= time-to-symptoms
+      [ set thinks-infected? true ]
+      [ set thinks-infected? false ]
+  ]
+end
 
 
 ;; update the display, to change the humans and bugs colors
@@ -342,6 +367,28 @@ NIL
 NIL
 NIL
 1
+
+INPUTBOX
+5
+553
+160
+613
+min-symptoms-days
+10.0
+1
+0
+Number
+
+INPUTBOX
+4
+617
+161
+677
+max-symptoms-days
+28.0
+1
+0
+Number
 
 @#$#@#$#@
 ## WHAT IS IT?
