@@ -77,7 +77,7 @@ to create-world
   set hospital-patches patches with [pxcor > 0 and pycor > 0]
   ask hospital-patches [ set pcolor blue ]
 
-  set humans-chance-reproduce 40
+  set humans-chance-reproduce 70
 end
 
 ;; initalize the humans and bug agents
