@@ -41,7 +41,6 @@ end
 to go
   ask turtles[
     move
-    bloodfeed
 
     ;move-to-empty-one-of world-patches
     ;move randomly, not needed as move all over
@@ -51,6 +50,7 @@ to go
   ]
 
   ;TODO: add ask humans if there infected? to go to move to the hospital
+  bloodfeed
   update-display
   tick
 end
@@ -126,15 +126,19 @@ to bloodfeed
   ask mosquitoes with [ (sex = "f") and pregnant? and (any? humans-here) ] [
     ; Do something related to the pregnancy/eggs/birthing here?
 
-    if infected? [
-      ask (one-of humans-here)[
-        set infected? true
-      ]
-    ]
+    i
+  ]
+end
 
-    ;if (any? (humans-on self) with [infected?]) [
-    ;  set infected? true
-    ;]
+to infection
+  if infected? [
+    ask (one-of humans-here)[
+      set infected? true
+    ]
+  ]
+
+  if (any? (humans-on self) with [infected?]) [
+    set infected? true
   ]
 end
 
@@ -182,8 +186,8 @@ end
 GRAPHICS-WINDOW
 210
 10
-1067
-868
+1089
+890
 -1
 -1
 26.4
@@ -232,7 +236,7 @@ human-capacity
 human-capacity
 2
 100
-26.0
+100.0
 1
 1
 NIL
@@ -247,7 +251,7 @@ mosquitoes-capacity
 mosquitoes-capacity
 2
 100
-1.0
+2.0
 1
 1
 NIL
@@ -262,7 +266,7 @@ inital-humans-infected
 inital-humans-infected
 0
 100
-36.0
+0.0
 1
 1
 NIL
@@ -681,7 +685,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.1.1
+NetLogo 6.0.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
