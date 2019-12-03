@@ -188,11 +188,11 @@ end
 to recover-or-die
   ask humans with [ (infected?) ]
   [
-    let risk-factor 0
+    let risk-factor 1
     if age <= 5 * 365
-    [set risk-factor 10]
+    [set risk-factor 2]
 
-    if infected-time > duration
+    if infected-time * risk-factor > duration
     [if random-float 100 > recovery-chance
       [die]
     ]
@@ -208,6 +208,10 @@ end
 
 to-report infected-mosquitoes-count
   report (count mosquitoes with [infected?])
+end
+
+to-report healthy-humans-count
+  report (count humans with [infected? = false])
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -410,6 +414,17 @@ recovery-chance
 1
 %
 HORIZONTAL
+
+MONITOR
+15
+374
+123
+419
+Healthy Humans
+healthy-humans-count
+0
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -753,7 +768,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.1.1
+NetLogo 6.0.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
