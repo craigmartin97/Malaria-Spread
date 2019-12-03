@@ -473,10 +473,10 @@ PENS
 "mosquitoes" 1.0 0 -6459832 true "" "plot count mosquitoes"
 
 INPUTBOX
-171
-400
-326
-460
+231
+363
+386
+423
 min-symptoms-days
 10.0
 1
