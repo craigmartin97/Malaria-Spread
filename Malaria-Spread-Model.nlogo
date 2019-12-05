@@ -48,13 +48,14 @@ to go
     ;inc-infected-time ;; if infected inc infected time
 
     die-naturally
-    recover-or-die
-
-    humans-reproduce
-    humans-birth
 
     move
   ]
+
+  recover-or-die
+
+  humans-reproduce
+  humans-birth
 
   bloodfeed
   update-infected-length
@@ -94,6 +95,7 @@ to create-agents
     set age random lifespan
     set pregnant? false
     set pregnancy-time 0
+    set sex "f"
     ;set infected? (who < human-capacity * (inital-humans-infected / 100))
   ]
 
@@ -231,7 +233,7 @@ end
 
 to humans-reproduce
   ask humans with [sex = "f"] [
-    if random-float 100 < humans-chance-reproduce and not pregnant?
+    if (random-float 100 < humans-chance-reproduce) and not pregnant?
     [set pregnant? true ]
   ]
 end
