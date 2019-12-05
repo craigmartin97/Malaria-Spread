@@ -24,7 +24,7 @@ humans-own[
   infected-time ;; period that the human has been infected for
   time-to-symptoms ;; period of time before human recognises symptoms.
   thinks-infected? ;; does the human know that they are infected?
-  anti-malaria-drug-count
+  antimalarial-drug-count
   ;; TODO: immune-time? shoud we have an immune feature, where people cannot get malaria
 ]
 
@@ -43,6 +43,10 @@ to setup
   reset-ticks
 end
 
+to step
+  go
+end
+
 ;start simulation
 to go
   ask turtles[
@@ -52,6 +56,7 @@ to go
   ]
 
   get-drugs
+  consume-drugs
   move
   recover-or-die
 
@@ -63,10 +68,6 @@ to go
   check-infected
   update-display
   tick
-end
-
-to step
-  go
 end
 
 ;; create the world enviroment, world and hospitals
@@ -99,7 +100,7 @@ to create-agents
     set sex "f"
     set pregnant? false
     set pregnancy-time 0
-    set anti-malaria-drug-count 0
+    set antimalarial-drug-count 0
   ]
 
   ; create mosquitoes
@@ -134,7 +135,7 @@ end
 ;; Handles which movement methods should be called for turtles.
 to move
   ask humans [
-    ifelse infected? and thinks-infected?
+    ifelse infected? and thinks-infected? and (antimalarial-drug-count = 0)
       [ move-to-empty-one-of hospital-patches ]
       [ move-to-empty-one-of world-patches ]
   ]
@@ -301,7 +302,18 @@ end
 
 to get-drugs
   ask humans-on hospital-patches [
-    set anti-malaria-drug-count 14
+    set antimalarial-drug-count 14
+  ]
+end
+
+to consume-drugs
+  ask humans with [ antimalarial-drug-count > 0 ] [
+    if (antimalarial-drug-count = 1)   ;TODO change this to a be
+    [
+      set infected? false
+    ]
+
+    set antimalarial-drug-count (antimalarial-drug-count - 1)
   ]
 end
 
