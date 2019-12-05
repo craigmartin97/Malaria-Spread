@@ -24,6 +24,7 @@ humans-own[
   infected-time ;; period that the human has been infected for
   time-to-symptoms ;; period of time before human recognises symptoms.
   thinks-infected? ;; does the human know that they are infected?
+  anti-malaria-drug-count
   ;; TODO: immune-time? shoud we have an immune feature, where people cannot get malaria
 ]
 
@@ -47,12 +48,11 @@ to go
   ask turtles[
     get-older ; inc turtle age and check if should die
     ;inc-infected-time ;; if infected inc infected time
-
     die-naturally
-
-    move
   ]
 
+  get-drugs
+  move
   recover-or-die
 
   reproduce
@@ -99,6 +99,7 @@ to create-agents
     set sex "f"
     set pregnant? false
     set pregnancy-time 0
+    set anti-malaria-drug-count 0
   ]
 
   ; create mosquitoes
@@ -133,7 +134,7 @@ end
 ;; Handles which movement methods should be called for turtles.
 to move
   ask humans [
-    ifelse infected? and thinks-infected?
+    ifelse infected? and thinks-infected? and (anti-malaria-drug-count = 0)
       [ move-to-empty-one-of hospital-patches ]
       [ move-to-empty-one-of world-patches ]
   ]
@@ -154,7 +155,7 @@ end
 
 to bloodfeed
   ask mosquitoes with [ (sex = "f") and pregnant? and (any? humans-here) ] [
-   set bloodfed? true
+    set bloodfed? true
 
     infection
   ]
@@ -240,7 +241,6 @@ to recover-or-die
 end
 
 to reproduce
-
   ask humans with [sex = "f"] [
     if (random-float 100 < humans-chance-reproduce) and not pregnant?
     [set pregnant? true ]
@@ -293,6 +293,15 @@ to birth
       [set sex "m"]
     ]
     [ set pregnancy-time (pregnancy-time + 1) ]
+  ]
+end
+
+
+;;; Drug-related
+
+to get-drugs
+  ask humans-on hospital-patches [
+    set anti-malaria-drug-count 14
   ]
 end
 

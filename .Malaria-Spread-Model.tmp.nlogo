@@ -24,6 +24,7 @@ humans-own[
   infected-time ;; period that the human has been infected for
   time-to-symptoms ;; period of time before human recognises symptoms.
   thinks-infected? ;; does the human know that they are infected?
+  anti-malaria-drug-count
   ;; TODO: immune-time? shoud we have an immune feature, where people cannot get malaria
 ]
 
@@ -47,12 +48,11 @@ to go
   ask turtles[
     get-older ; inc turtle age and check if should die
     ;inc-infected-time ;; if infected inc infected time
-
     die-naturally
-
-    move
   ]
 
+  get-drugs
+  move
   recover-or-die
 
   reproduce
@@ -99,6 +99,7 @@ to create-agents
     set sex "f"
     set pregnant? false
     set pregnancy-time 0
+    set anti-malaria-drug-count 0
   ]
 
   ; create mosquitoes
@@ -154,7 +155,7 @@ end
 
 to bloodfeed
   ask mosquitoes with [ (sex = "f") and pregnant? and (any? humans-here) ] [
-   set bloodfed? true
+    set bloodfed? true
 
     infection
   ]
@@ -240,7 +241,6 @@ to recover-or-die
 end
 
 to reproduce
-
   ask humans with [sex = "f"] [
     if (random-float 100 < humans-chance-reproduce) and not pregnant?
     [set pregnant? true ]
@@ -293,6 +293,15 @@ to birth
       [set sex "m"]
     ]
     [ set pregnancy-time (pregnancy-time + 1) ]
+  ]
+end
+
+
+;;; Drug-related
+
+to get-drugs
+  ask humans-on hospital-patches [
+    set anti-malaria-drug-count 14
   ]
 end
 
@@ -407,7 +416,7 @@ human-capacity
 human-capacity
 2
 100
-57.0
+60.0
 1
 1
 NIL
@@ -600,7 +609,7 @@ Number
 MONITOR
 1334
 70
-1467
+1484
 115
 NIL
 female-humans-count
@@ -611,7 +620,7 @@ female-humans-count
 MONITOR
 1334
 122
-1455
+1485
 167
 NIL
 male-humans-count
@@ -633,7 +642,7 @@ female-mosquitoes-count
 MONITOR
 1333
 283
-1474
+1485
 328
 NIL
 male-mosquitoes-count
@@ -642,10 +651,10 @@ male-mosquitoes-count
 11
 
 MONITOR
-1476
-70
-1623
-115
+1496
+71
+1661
+116
 NIL
 pregnant-humans-count
 17
@@ -666,7 +675,7 @@ pregnant-mosquitoes-count
 MONITOR
 1334
 16
-1455
+1484
 61
 NIL
 alive-humans-count
@@ -677,7 +686,7 @@ alive-humans-count
 MONITOR
 1332
 176
-1473
+1485
 221
 NIL
 alive-mosquitoes-count
