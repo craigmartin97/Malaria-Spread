@@ -157,7 +157,7 @@ end
 
 to bloodfeed
   ask mosquitoes with [ (sex = "f") and pregnant? and (any? humans-here) ] [
-    ; Do something related to the pregnancy/eggs/birthing here?
+   set bloodfed? true
 
     infection
   ]
@@ -494,7 +494,7 @@ duration
 duration
 0
 22265
-0.0
+635.0
 5
 1
 days
@@ -910,7 +910,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.0.1
+NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
