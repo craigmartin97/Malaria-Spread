@@ -407,7 +407,7 @@ human-capacity
 human-capacity
 2
 100
-60.0
+57.0
 1
 1
 NIL
@@ -600,7 +600,7 @@ Number
 MONITOR
 1334
 70
-1484
+1467
 115
 NIL
 female-humans-count
@@ -611,7 +611,7 @@ female-humans-count
 MONITOR
 1334
 122
-1485
+1455
 167
 NIL
 male-humans-count
@@ -633,7 +633,7 @@ female-mosquitoes-count
 MONITOR
 1333
 283
-1485
+1474
 328
 NIL
 male-mosquitoes-count
@@ -642,10 +642,10 @@ male-mosquitoes-count
 11
 
 MONITOR
-1496
-71
-1661
-116
+1476
+70
+1623
+115
 NIL
 pregnant-humans-count
 17
@@ -666,7 +666,7 @@ pregnant-mosquitoes-count
 MONITOR
 1334
 16
-1484
+1455
 61
 NIL
 alive-humans-count
@@ -677,7 +677,7 @@ alive-humans-count
 MONITOR
 1332
 176
-1485
+1473
 221
 NIL
 alive-mosquitoes-count
