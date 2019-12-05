@@ -6,7 +6,7 @@ globals [
   hospital-patches ;; patch where we show the "CROWDED" label
   world-patches ;; path that is the free roaming world
   humans-chance-reproduce ;; the probability of a human generating an offspring each tick
-
+  mosquitoes-chance-reproduce ;; the probability of a mosquitoes generating offspring each tick
 ]
 
 ;; for humans and mosquitoes
@@ -30,6 +30,7 @@ humans-own[
 ;; mosquitoes agents only
 mosquitoes-own[
   bloodfeed-counter ;; days until next feed, only females when pregnant.
+  bloodfed? ;; has the mosquito blood fed
 ]
 
 ;; initalize the interface and create enviroment
@@ -54,8 +55,8 @@ to go
 
   recover-or-die
 
-  humans-reproduce
-  humans-birth
+  reproduce
+  birth
 
   bloodfeed
   update-infected-length
@@ -78,7 +79,9 @@ to create-world
   set hospital-patches patches with [pxcor > 0 and pycor > 0]
   ask hospital-patches [ set pcolor blue ]
 
-  set humans-chance-reproduce 40
+  set humans-chance-reproduce 10
+
+  set mosquitoes-chance-reproduce 20
 end
 
 ;; initalize the humans and bug agents
@@ -93,6 +96,7 @@ to create-agents
     set thinks-infected? false
     set lifespan 61 * 365 ; avg lifespace (61yrs in africa) * num of days = 22,265
     set age random lifespan
+    set sex "f"
     set pregnant? false
     set pregnancy-time 0
     set sex "f"
@@ -109,8 +113,15 @@ to create-agents
     set sex "f"
     set lifespan 30
     set age random lifespan
+    set bloodfed? false
     ;set infected? (who < mosquitoes-capacity * (inital-mosquitoes-infected / 100))
   ]
+
+  ask n-of (mosquitoes-capacity * (50 / 100)) mosquitoes
+  [set sex "m"]
+
+  ask n-of (human-capacity * (50 / 100)) humans
+  [set sex "m"]
 
   ask n-of (mosquitoes-capacity * (inital-mosquitoes-infected / 100)) mosquitoes
   [set infected? true]
@@ -231,14 +242,20 @@ to recover-or-die
   ]
 end
 
-to humans-reproduce
+to reproduce
+
   ask humans with [sex = "f"] [
     if (random-float 100 < humans-chance-reproduce) and not pregnant?
     [set pregnant? true ]
   ]
+
+  ask mosquitoes with [sex = "f"] [
+    if random-float 100 < mosquitoes-chance-reproduce and not pregnant? and bloodfed?
+    [set pregnant? true]
+  ]
 end
 
-to humans-birth
+to birth
   ask humans with [ (pregnant?) ] [
     ifelse pregnancy-time = 280
     [ hatch 1
@@ -246,13 +263,39 @@ to humans-birth
         set shape "person"
         set infected-time 0
         set infected? infected?
+        set sex "f"
         set thinks-infected? false
         set lifespan 61 * 365 ; avg lifespace (61yrs in africa) * num of days = 22,265
       ]
       set pregnancy-time 0
       set pregnant? false
+
+      ask n-of (1 * (50 / 100)) humans
+      [set sex "m"]
       ]
   [ set pregnancy-time (pregnancy-time + 1) ]
+  ]
+
+  ask mosquitoes with [ (pregnant?) ][
+    ifelse pregnancy-time = 14
+    [ hatch 20
+      [
+        set size 0.7
+        set shape "bug"
+        set infected? infected?
+        set pregnant? false
+        set sex "f"
+        set lifespan 30
+        set age 1
+        set bloodfed? false
+      ]
+      set pregnancy-time 0
+      set pregnant? false
+
+       ask n-of (20 * (50 / 100)) mosquitoes
+      [set sex "m"]
+    ]
+    [ set pregnancy-time (pregnancy-time + 1) ]
   ]
 end
 
