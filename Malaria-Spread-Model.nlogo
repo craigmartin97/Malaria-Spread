@@ -103,7 +103,7 @@ to create-agents
     set infected-time 0
     set infected? false
     set thinks-infected? false
-    set lifespan 61 * 365 ; avg lifespace (61yrs in africa) * num of days = 22,265
+    set-human-lifespan
     set age random lifespan
     set sex "f"
     set pregnant? false
@@ -119,7 +119,8 @@ to create-agents
     set infected? false
     set pregnant? false
     set sex "f"
-    set lifespan 30
+    ;set lifespan 30
+    set-mosquito-lifespan
     set age random lifespan
     set pregnancy-time 0
     set bloodfed? false
@@ -165,20 +166,25 @@ end
 
 to bloodfeed
   ask mosquitoes with [ (sex = "f") and pregnant? and (any? humans-here) ] [
-    set bloodfed? true
-
-    infection
+    ifelse random 100 < 15
+    [
+      die
+    ]
+    [
+      set bloodfed? true
+      infection
+    ]
   ]
 end
 
 to infection
-  if infected? [
+  if ((infected?) and random 100 < infection-chance) [
     ask (one-of humans-here)[
       human-infection
     ]
   ]
 
-  if (any? (humans-on self) with [infected?]) [
+  if ((any? (humans-on self) with [infected?]) and random 100 < infection-chance) [
     set infected? true
   ]
 end
@@ -223,7 +229,16 @@ to update-display
 end
 
 
-;;; Age/Time methods
+
+;set mosquito lifespan, the max time the mosqutio can be alive for
+to set-mosquito-lifespan
+  set lifespan (mosquito-min-age + random (mosquito-max-age - mosquito-min-age))
+end
+
+;set human lifespan, the max time the mosqutio can be alive for
+to set-human-lifespan
+  set lifespan (human-min-age + random (human-max-age - human-min-age))
+end
 
 ; increase the age of the turtle
 to get-older
@@ -278,7 +293,7 @@ to birth
         set pregnant? false
         set pregnancy-time 0
         set thinks-infected? false
-        set lifespan 61 * 365 ; avg lifespace (61yrs in africa) * num of days = 22,265
+        set-human-lifespan
       ]
       set pregnancy-time 0
       set pregnant? false
@@ -305,7 +320,7 @@ to birth
           [set sex "f"]
           [set sex "m"]
 
-        set lifespan 30
+        set-mosquito-lifespan
         set age 1
         set bloodfed? false
       ]
@@ -477,7 +492,7 @@ inital-humans-infected
 inital-humans-infected
 0
 100
-7.0
+52.0
 1
 1
 %
@@ -492,7 +507,7 @@ inital-mosquitoes-infected
 inital-mosquitoes-infected
 0
 100
-31.0
+24.0
 1
 1
 %
@@ -563,7 +578,7 @@ duration
 duration
 0
 22265
-635.0
+125.0
 5
 1
 days
@@ -578,7 +593,7 @@ recovery-chance
 recovery-chance
 0
 100
-87.0
+100.0
 1
 1
 %
@@ -621,7 +636,7 @@ INPUTBOX
 326
 460
 min-symptoms-days
-1.0
+20.0
 1
 0
 Number
@@ -724,6 +739,65 @@ alive-mosquitoes-count
 17
 1
 11
+
+SLIDER
+208
+98
+380
+131
+infection-chance
+infection-chance
+0
+100
+16.0
+1
+1
+%
+HORIZONTAL
+
+INPUTBOX
+1366
+466
+1521
+526
+mosquito-min-age
+10.0
+1
+0
+Number
+
+INPUTBOX
+1367
+533
+1522
+593
+mosquito-max-age
+25.0
+1
+0
+Number
+
+INPUTBOX
+1525
+467
+1680
+527
+human-min-age
+10000.0
+1
+0
+Number
+
+INPUTBOX
+1526
+532
+1681
+592
+human-max-age
+22265.0
+1
+0
+Number
 
 @#$#@#$#@
 ## WHAT IS IT?
