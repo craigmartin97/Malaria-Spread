@@ -7,6 +7,8 @@ globals [
   world-patches ;; path that is the free roaming world
   humans-chance-reproduce ;; the probability of a human generating an offspring each tick
   mosquitoes-chance-reproduce ;; the probability of a mosquitoes generating offspring each tick
+  mosquitoes-max-capacity ;; max num mosquites
+  humans-max-capacity ;; max num humans
 ]
 
 ;; for humans and mosquitoes
@@ -37,6 +39,7 @@ mosquitoes-own[
 ;; initalize the interface and create enviroment
 to setup
   clear-all
+  setup-global-vars
   create-world  ;;create humans and mosquitoes
   create-agents
   update-display
@@ -45,6 +48,11 @@ end
 
 to step
   go
+end
+
+to setup-global-vars
+  set mosquitoes-max-capacity 500
+  set humans-max-capacity 2=00
 end
 
 ;start simulation
@@ -80,9 +88,9 @@ to create-world
   set hospital-patches patches with [pxcor > 0 and pycor > 0]
   ask hospital-patches [ set pcolor blue ]
 
-  set humans-chance-reproduce 10
+  set humans-chance-reproduce 1;10
 
-  set mosquitoes-chance-reproduce 20
+  set mosquitoes-chance-reproduce 10;20
 end
 
 ;; initalize the humans and bug agents
@@ -109,10 +117,11 @@ to create-agents
     set size 0.7
     set shape "bug"
     set infected? false
-    set pregnant? true
+    set pregnant? false
     set sex "f"
     set lifespan 30
     set age random lifespan
+    set pregnancy-time 0
     set bloodfed? false
   ]
 
@@ -242,56 +251,66 @@ to recover-or-die
 end
 
 to reproduce
-  ask humans with [sex = "f"] [
+  ask humans with [sex = "f" and age >= 18 * 365] [
     if (random-float 100 < humans-chance-reproduce) and not pregnant?
     [set pregnant? true ]
   ]
 
   ask mosquitoes with [sex = "f"] [
-    if random-float 100 < mosquitoes-chance-reproduce and not pregnant? and bloodfed?
+    if random-float 100 < mosquitoes-chance-reproduce and not pregnant?
     [set pregnant? true]
   ]
 end
 
 to birth
   ask humans with [ (pregnant?) ] [
-    ifelse pregnancy-time = 280
+    ifelse count humans < humans-max-capacity and pregnancy-time = 280
     [ hatch 1
       [ set age 1
         set shape "person"
         set infected-time 0
         set infected? infected?
-        set sex "f"
+
+        ifelse random 100 < 50
+          [set sex "f"]
+          [set sex "m"]
+
+        set pregnant? false
+        set pregnancy-time 0
         set thinks-infected? false
         set lifespan 61 * 365 ; avg lifespace (61yrs in africa) * num of days = 22,265
       ]
       set pregnancy-time 0
       set pregnant? false
-
-      ask n-of (1 * (50 / 100)) humans
-      [set sex "m"]
       ]
   [ set pregnancy-time (pregnancy-time + 1) ]
   ]
 
   ask mosquitoes with [ (pregnant?) ][
-    ifelse pregnancy-time = 14
-    [ hatch 20
+
+    let hatch-eggs 1
+    if bloodfed?
+    [set hatch-eggs 10]
+
+    ifelse count mosquitoes < mosquitoes-max-capacity and pregnancy-time = 5;14
+    [ hatch hatch-eggs
       [
         set size 0.7
         set shape "bug"
         set infected? infected?
+        set pregnancy-time 0
         set pregnant? false
-        set sex "f"
+
+        ifelse random 100 < 50
+          [set sex "f"]
+          [set sex "m"]
+
         set lifespan 30
         set age 1
         set bloodfed? false
       ]
       set pregnancy-time 0
       set pregnant? false
-
-       ask n-of (20 * (50 / 100)) mosquitoes
-      [set sex "m"]
     ]
     [ set pregnancy-time (pregnancy-time + 1) ]
   ]
@@ -308,7 +327,7 @@ end
 
 to consume-drugs
   ask humans with [ antimalarial-drug-count > 0 ] [
-    if (antimalarial-drug-count = 1)   ;TODO change this to a be
+    if (antimalarial-drug-count = 1)   ;TODO change this to a better calculation based on age and drug resistance.
     [
       set infected? false
     ]
@@ -427,8 +446,8 @@ SLIDER
 human-capacity
 human-capacity
 2
-100
-60.0
+humans-max-capacity
+200.0
 1
 1
 NIL
@@ -442,8 +461,8 @@ SLIDER
 mosquitoes-capacity
 mosquitoes-capacity
 2
-100
-36.0
+mosquitoes-max-capacity
+78.0
 1
 1
 NIL
@@ -1048,7 +1067,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.1.1
+NetLogo 6.0.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
