@@ -477,7 +477,7 @@ mosquitoes-capacity
 mosquitoes-capacity
 2
 mosquitoes-max-capacity
-78.0
+110.0
 1
 1
 NIL
@@ -507,7 +507,7 @@ inital-mosquitoes-infected
 inital-mosquitoes-infected
 0
 100
-24.0
+30.0
 1
 1
 %
@@ -578,8 +578,8 @@ duration
 duration
 0
 22265
-125.0
-5
+22.0
+1
 1
 days
 HORIZONTAL
@@ -593,7 +593,7 @@ recovery-chance
 recovery-chance
 0
 100
-100.0
+11.0
 1
 1
 %
@@ -647,7 +647,7 @@ INPUTBOX
 326
 528
 max-symptoms-days
-28.0
+22.0
 1
 0
 Number
@@ -749,7 +749,7 @@ infection-chance
 infection-chance
 0
 100
-16.0
+84.0
 1
 1
 %
