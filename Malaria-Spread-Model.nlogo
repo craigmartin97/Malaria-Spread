@@ -142,7 +142,7 @@ to create-agents
   ask n-of (human-capacity * (inital-humans-infected / 100)) humans
   [
     human-infection
-    set infected-time random 100 ;as infected assign a random infected time value to begin with
+    set infected-time random time-to-symptoms ;as infected assign a random infected time value to begin with
   ]
 end
 
@@ -150,7 +150,7 @@ end
 to move
   ask humans [
     ; there infected, think there infected and have no pills left
-    ifelse (antimalarial-drug-count = 0 and ((infected? and thinks-infected?) or random 100 < 1))
+    ifelse (antimalarial-drug-count = 0 and ((infected? and thinks-infected?) or random 100 < hospital-visit-chance) and count hospital-patches > count turtles-on hospital-patches)
       [ move-to-empty-one-of hospital-patches ]
       [ move-to-empty-one-of world-patches ]
   ]
@@ -185,9 +185,10 @@ end
 to infection
   if ((infected?) and random 100 < infection-chance) [
     ask (one-of humans-here)[
-      if not infected? ;; ensure the chosen human is not infected already
+      if not infected? and (antimalarial-drug-count = 0 or random 100 < 10) ;; ensure the chosen human is not infected already, 90% less likely to get malaria if taking pills.
       [
-       human-infection
+        ;if human has 1 or more pills then
+        human-infection
         set current-infections current-infections + 1
       ]
     ]
@@ -430,13 +431,13 @@ end
 ; calculate drug resistance? preportion of infections treated by drug, number of malaria clones per number
 @#$#@#$#@
 GRAPHICS-WINDOW
-443
-11
-1322
-891
+432
+10
+1252
+831
 -1
 -1
-26.4
+24.61
 1
 10
 1
@@ -829,6 +830,21 @@ malaria-generation-length
 1
 0
 Number
+
+SLIDER
+250
+285
+422
+318
+hospital-visit-chance
+hospital-visit-chance
+0
+100
+68.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
