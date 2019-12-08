@@ -538,7 +538,7 @@ mosquitoes-capacity
 mosquitoes-capacity
 2
 mosquitoes-max-capacity
-110.0
+148.0
 1
 1
 NIL
@@ -639,7 +639,7 @@ duration
 duration
 0
 200
-168.0
+69.0
 1
 1
 days
@@ -654,7 +654,7 @@ recovery-chance
 recovery-chance
 0
 100
-28.0
+19.0
 1
 1
 %
@@ -866,7 +866,7 @@ INPUTBOX
 387
 210
 malaria-generation-length
-300.0
+100.0
 1
 0
 Number
@@ -880,7 +880,7 @@ hospital-visit-chance
 hospital-visit-chance
 0
 100
-22.0
+11.0
 1
 1
 NIL
@@ -892,7 +892,7 @@ INPUTBOX
 387
 274
 replacement-drug-days
-1000.0
+200.0
 1
 0
 Number
