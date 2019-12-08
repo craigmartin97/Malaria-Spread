@@ -9,6 +9,8 @@ globals [
   mosquitoes-chance-reproduce ;; the probability of a mosquitoes generating offspring each tick
   mosquitoes-max-capacity ;; max num mosquites
   humans-max-capacity ;; max num humans
+  previous-infections ;; previous malaria number
+  current-infections ;; current number of malaria infections
 ]
 
 ;; for humans and mosquitoes
@@ -62,6 +64,8 @@ to go
     ;inc-infected-time ;; if infected inc infected time
     die-naturally
   ]
+
+  set-drug-generation-counters
 
   get-drugs
   consume-drugs
@@ -145,7 +149,8 @@ end
 ;; Handles which movement methods should be called for turtles.
 to move
   ask humans [
-    ifelse infected? and thinks-infected? and (antimalarial-drug-count = 0)
+    ; there infected, think there infected and have no pills left
+    ifelse (antimalarial-drug-count = 0 and ((infected? and thinks-infected?) or random 100 < 1))
       [ move-to-empty-one-of hospital-patches ]
       [ move-to-empty-one-of world-patches ]
   ]
@@ -180,12 +185,17 @@ end
 to infection
   if ((infected?) and random 100 < infection-chance) [
     ask (one-of humans-here)[
-      human-infection
+      if not infected? ;; ensure the chosen human is not infected already
+      [
+       human-infection
+        set current-infections current-infections + 1
+      ]
     ]
   ]
 
-  if ((any? (humans-on self) with [infected?]) and random 100 < infection-chance) [
+  if ((not infected?) and (any? (humans-on self) with [infected?]) and random 100 < infection-chance) [
     set infected? true
+    set current-infections current-infections + 1
   ]
 end
 
@@ -348,6 +358,16 @@ to consume-drugs
     ]
 
     set antimalarial-drug-count (antimalarial-drug-count - 1)
+  ]
+end
+
+;; change the counters for monitoring the current and previous generation infection rates
+to set-drug-generation-counters
+  if ticks mod malaria-generation-length = 0
+  [
+    ; assign drug resitance for current level of malaria.
+    set previous-infections current-infections
+    set current-infections 0
   ]
 end
 
@@ -578,7 +598,7 @@ duration
 duration
 0
 22265
-22.0
+759.0
 1
 1
 days
@@ -611,10 +631,10 @@ healthy-humans-count
 11
 
 PLOT
-15
-575
-383
-871
+12
+535
+380
+831
 Populations
 days
 agents
@@ -795,6 +815,17 @@ INPUTBOX
 592
 human-max-age
 22265.0
+1
+0
+Number
+
+INPUTBOX
+240
+185
+395
+245
+malaria-generation-length
+1000.0
 1
 0
 Number
@@ -1141,7 +1172,7 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.0.1
+NetLogo 6.1.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
