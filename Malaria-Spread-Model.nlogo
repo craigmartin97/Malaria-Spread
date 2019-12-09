@@ -523,7 +523,7 @@ human-capacity
 human-capacity
 2
 humans-max-capacity
-30.0
+201.0
 1
 1
 NIL
@@ -538,7 +538,7 @@ mosquitoes-capacity
 mosquitoes-capacity
 2
 mosquitoes-max-capacity
-500.0
+170.0
 1
 1
 NIL
@@ -553,7 +553,7 @@ inital-humans-infected
 inital-humans-infected
 0
 100
-29.0
+30.0
 1
 1
 %
@@ -568,7 +568,7 @@ inital-mosquitoes-infected
 inital-mosquitoes-infected
 0
 100
-30.0
+1.0
 1
 1
 %
@@ -654,7 +654,7 @@ recovery-chance
 recovery-chance
 0
 100
-67.0
+45.0
 1
 1
 %
@@ -917,7 +917,7 @@ death
 0.0
 10.0
 true
-false
+true
 "" ""
 PENS
 "natural-death" 1.0 0 -13345367 true "" "plot count-human-natural-deaths"
