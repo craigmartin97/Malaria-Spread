@@ -523,7 +523,7 @@ human-capacity
 human-capacity
 2
 humans-max-capacity
-200.0
+30.0
 1
 1
 NIL
@@ -538,7 +538,7 @@ mosquitoes-capacity
 mosquitoes-capacity
 2
 mosquitoes-max-capacity
-148.0
+500.0
 1
 1
 NIL
@@ -865,7 +865,7 @@ hospital-visit-chance
 hospital-visit-chance
 0
 100
-73.0
+9.0
 1
 1
 NIL
@@ -1467,6 +1467,69 @@ NetLogo 6.0.1
     </enumeratedValueSet>
     <enumeratedValueSet variable="mosquito-max-age">
       <value value="25"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="Low-Human-Population" repetitions="3" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="5000"/>
+    <exitCondition>count mosquitoes = 0 or count humans = 0</exitCondition>
+    <metric>ticks</metric>
+    <metric>count humans</metric>
+    <metric>count mosquitoes</metric>
+    <metric>drug-efficacy</metric>
+    <metric>current-infections</metric>
+    <metric>previous-infections</metric>
+    <enumeratedValueSet variable="high-resistance-multiplier">
+      <value value="0.008"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="low-resistance-multiplier">
+      <value value="0.002"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="human-capacity">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-symptoms-days">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="inital-mosquitoes-infected">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-symptoms-days">
+      <value value="22"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="hospital-visit-chance">
+      <value value="9"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="replacement-drug-days">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="malaria-generation-length">
+      <value value="400"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-chance">
+      <value value="67"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="duration">
+      <value value="130"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mosquito-min-age">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mosquitoes-capacity">
+      <value value="500"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="inital-humans-infected">
+      <value value="29"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="human-max-age">
+      <value value="22265"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mosquito-max-age">
+      <value value="25"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="human-min-age">
+      <value value="10000"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
