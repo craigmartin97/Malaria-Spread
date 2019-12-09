@@ -396,8 +396,8 @@ to set-drug-generation-counters
     ; assign drug resitance for current level of malaria.
     ;set drug-efficacy ? (human-min-age + random (human-max-age - human-min-age))
     ifelse current-infections < previous-infections
-    [ set drug-efficacy drug-efficacy - random min-resistance-jump ]
-    [ set drug-efficacy drug-efficacy - (min-resistance-jump + random (max-resistance-jump - min-resistance-jump))]
+    [ set drug-efficacy drug-efficacy - (low-resistance-multiplier * current-infections) ]
+    [ set drug-efficacy drug-efficacy - (high-resistance-multiplier * current-infections) ]
 
     if drug-efficacy < 0
     [ set drug-efficacy 0 ]
@@ -471,13 +471,13 @@ end
 ; calculate drug resistance? preportion of infections treated by drug, number of malaria clones per number
 @#$#@#$#@
 GRAPHICS-WINDOW
-432
+373
 10
 1252
-831
+890
 -1
 -1
-24.61
+26.4
 1
 10
 1
@@ -498,10 +498,10 @@ ticks
 30.0
 
 BUTTON
-17
-50
-80
-83
+16
+13
+79
+46
 NIL
 setup
 NIL
@@ -515,55 +515,55 @@ NIL
 1
 
 SLIDER
-17
-97
-189
-130
+16
+54
+188
+87
 human-capacity
 human-capacity
 2
 humans-max-capacity
-200.0
+30.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-18
-137
-190
-170
+194
+54
+366
+87
 mosquitoes-capacity
 mosquitoes-capacity
 2
 mosquitoes-max-capacity
-148.0
+500.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-13
-274
-206
-307
+15
+96
+189
+129
 inital-humans-infected
 inital-humans-infected
 0
 100
-52.0
+29.0
 1
 1
 %
 HORIZONTAL
 
 SLIDER
-15
-316
-207
-349
+195
+96
+368
+129
 inital-mosquitoes-infected
 inital-mosquitoes-infected
 0
@@ -575,10 +575,10 @@ inital-mosquitoes-infected
 HORIZONTAL
 
 BUTTON
-92
-50
-155
-83
+91
+13
+154
+46
 NIL
 go
 T
@@ -592,10 +592,10 @@ NIL
 1
 
 MONITOR
-14
-426
-122
-471
+1370
+107
+1478
+152
 Infected Humans
 infected-humans-count
 17
@@ -603,10 +603,10 @@ infected-humans-count
 11
 
 MONITOR
-13
-483
-139
-528
+1482
+107
+1608
+152
 Infected Mosquitoes
 infected-mosquitoes-count
 17
@@ -614,10 +614,10 @@ infected-mosquitoes-count
 11
 
 BUTTON
-93
-11
-156
-44
+168
+14
+231
+47
 Step
 step
 NIL
@@ -632,39 +632,39 @@ NIL
 
 SLIDER
 16
-185
-207
-218
+177
+192
+210
 duration
 duration
 0
 200
-69.0
+130.0
 1
 1
 days
 HORIZONTAL
 
 SLIDER
-13
-227
-205
-260
+16
+137
+191
+170
 recovery-chance
 recovery-chance
 0
 100
-19.0
+67.0
 1
 1
 %
 HORIZONTAL
 
 MONITOR
-15
-374
-123
-419
+1257
+108
+1365
+153
 Healthy Humans
 healthy-humans-count
 0
@@ -672,10 +672,10 @@ healthy-humans-count
 11
 
 PLOT
-12
-535
-380
-831
+1272
+340
+1688
+636
 Populations
 days
 agents
@@ -692,10 +692,10 @@ PENS
 "mosquitoes" 1.0 0 -6459832 true "" "plot count mosquitoes"
 
 INPUTBOX
-171
-400
-326
-460
+14
+220
+133
+280
 min-symptoms-days
 20.0
 1
@@ -703,10 +703,10 @@ min-symptoms-days
 Number
 
 INPUTBOX
-171
-468
-326
-528
+142
+220
+261
+280
 max-symptoms-days
 22.0
 1
@@ -714,10 +714,10 @@ max-symptoms-days
 Number
 
 MONITOR
-1334
-70
-1484
-115
+1569
+12
+1719
+57
 NIL
 female-humans-count
 17
@@ -725,10 +725,10 @@ female-humans-count
 11
 
 MONITOR
-1334
-122
-1485
-167
+1412
+11
+1563
+56
 NIL
 male-humans-count
 17
@@ -736,10 +736,10 @@ male-humans-count
 11
 
 MONITOR
-1332
-229
-1484
-274
+1569
+60
+1721
+105
 NIL
 female-mosquitoes-count
 17
@@ -747,10 +747,10 @@ female-mosquitoes-count
 11
 
 MONITOR
-1333
-283
-1485
-328
+1413
+60
+1565
+105
 NIL
 male-mosquitoes-count
 17
@@ -758,10 +758,10 @@ male-mosquitoes-count
 11
 
 MONITOR
-1496
-71
-1661
-116
+1724
+12
+1889
+57
 NIL
 pregnant-humans-count
 17
@@ -769,10 +769,10 @@ pregnant-humans-count
 11
 
 MONITOR
-1497
-229
-1663
-274
+1724
+61
+1890
+106
 NIL
 pregnant-mosquitoes-count
 17
@@ -780,10 +780,10 @@ pregnant-mosquitoes-count
 11
 
 MONITOR
-1334
-16
-1484
-61
+1258
+11
+1408
+56
 NIL
 alive-humans-count
 17
@@ -791,36 +791,21 @@ alive-humans-count
 11
 
 MONITOR
-1332
-176
-1485
-221
+1257
+59
+1410
+104
 NIL
 alive-mosquitoes-count
 17
 1
 11
 
-SLIDER
-208
-98
-380
-131
-infection-chance
-infection-chance
-0
-100
-84.0
-1
-1
-%
-HORIZONTAL
-
 INPUTBOX
-1284
-344
-1439
-404
+14
+287
+134
+347
 mosquito-min-age
 10.0
 1
@@ -828,10 +813,10 @@ mosquito-min-age
 Number
 
 INPUTBOX
-1285
-411
-1440
-471
+141
+285
+262
+345
 mosquito-max-age
 25.0
 1
@@ -839,10 +824,10 @@ mosquito-max-age
 Number
 
 INPUTBOX
-1443
-345
-1598
-405
+13
+349
+135
+409
 human-min-age
 10000.0
 1
@@ -850,10 +835,10 @@ human-min-age
 Number
 
 INPUTBOX
-1444
-410
-1599
-470
+141
+349
+262
+409
 human-max-age
 22265.0
 1
@@ -861,69 +846,69 @@ human-max-age
 Number
 
 INPUTBOX
-232
-150
-387
-210
+12
+479
+170
+539
 malaria-generation-length
-100.0
+400.0
 1
 0
 Number
 
 SLIDER
-226
-313
-398
-346
+196
+137
+369
+170
 hospital-visit-chance
 hospital-visit-chance
 0
 100
-11.0
+9.0
 1
 1
 NIL
 HORIZONTAL
 
 INPUTBOX
-232
-214
-387
-274
-replacement-drug-days
-200.0
-1
-0
-Number
-
-INPUTBOX
-1285
+176
 478
-1440
+331
 538
-min-resistance-jump
-10.0
+replacement-drug-days
+2000.0
 1
 0
 Number
 
 INPUTBOX
-1442
-476
-1597
-536
-max-resistance-jump
-25.0
+12
+414
+135
+474
+low-resistance-multiplier
+0.002
+1
+0
+Number
+
+INPUTBOX
+143
+414
+263
+474
+high-resistance-multiplier
+0.008
 1
 0
 Number
 
 PLOT
-1288
-565
-1702
-810
+1274
+644
+1688
+889
 Deaths
 days
 death
@@ -937,6 +922,79 @@ false
 PENS
 "natural-death" 1.0 0 -13345367 true "" "plot count-human-natural-deaths"
 "malaria-death" 1.0 0 -2674135 true "" "plot count-human-malaria-deaths"
+
+MONITOR
+1257
+157
+1344
+202
+drug-efficacy
+drug-efficacy
+0
+1
+11
+
+MONITOR
+1350
+157
+1461
+202
+current-infections
+current-infections
+0
+1
+11
+
+MONITOR
+1466
+157
+1584
+202
+previous-infections
+previous-infections
+0
+1
+11
+
+MONITOR
+1257
+206
+1423
+251
+total-human-natural-deaths
+count-human-natural-deaths
+0
+1
+11
+
+MONITOR
+1428
+206
+1620
+251
+total-human-malaria-deaths
+count-human-malaria-deaths
+0
+1
+11
+
+PLOT
+1655
+114
+1871
+254
+Drug Efficacy
+days
+drug-efficacy
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"Drug Efficacy" 1.0 0 -2674135 true "" "plot drug-efficacy"
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -1280,10 +1338,201 @@ false
 Polygon -7500403 true true 270 75 225 30 30 225 75 270
 Polygon -7500403 true true 30 75 75 30 270 225 225 270
 @#$#@#$#@
-NetLogo 6.1.1
+NetLogo 6.0.1
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="Low-Hospital-Chance" repetitions="3" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="200000"/>
+    <exitCondition>count mosquitoes = 0 or count humans = 0</exitCondition>
+    <metric>ticks</metric>
+    <metric>count humans</metric>
+    <metric>count mosquitoes</metric>
+    <metric>drug-efficacy</metric>
+    <metric>current-infections</metric>
+    <metric>previous-infections</metric>
+    <enumeratedValueSet variable="human-capacity">
+      <value value="200"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="hospital-visit-chance">
+      <value value="9"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-symptoms-days">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="inital-mosquitoes-infected">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-symptoms-days">
+      <value value="22"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="replacement-drug-days">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-resistance-jump">
+      <value value="25"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="malaria-generation-length">
+      <value value="400"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-chance">
+      <value value="24"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="duration">
+      <value value="36"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mosquito-min-age">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mosquitoes-capacity">
+      <value value="148"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="human-max-age">
+      <value value="22265"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="human-min-age">
+      <value value="10000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-resistance-jump">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="inital-humans-infected">
+      <value value="52"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mosquito-max-age">
+      <value value="25"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="High-Hospital-Chance" repetitions="3" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="200000"/>
+    <exitCondition>count mosquitoes = 0 or count humans = 0</exitCondition>
+    <metric>ticks</metric>
+    <metric>count humans</metric>
+    <metric>count mosquitoes</metric>
+    <metric>drug-efficacy</metric>
+    <metric>current-infections</metric>
+    <metric>previous-infections</metric>
+    <enumeratedValueSet variable="human-capacity">
+      <value value="200"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="hospital-visit-chance">
+      <value value="100"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-symptoms-days">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="inital-mosquitoes-infected">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-symptoms-days">
+      <value value="22"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="replacement-drug-days">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-resistance-jump">
+      <value value="25"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="malaria-generation-length">
+      <value value="400"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-chance">
+      <value value="24"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="duration">
+      <value value="36"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mosquito-min-age">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mosquitoes-capacity">
+      <value value="148"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="human-max-age">
+      <value value="22265"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="human-min-age">
+      <value value="10000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-resistance-jump">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="inital-humans-infected">
+      <value value="52"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mosquito-max-age">
+      <value value="25"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="Low-Human-Population" repetitions="3" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="5000"/>
+    <exitCondition>count mosquitoes = 0 or count humans = 0</exitCondition>
+    <metric>ticks</metric>
+    <metric>count humans</metric>
+    <metric>count mosquitoes</metric>
+    <metric>drug-efficacy</metric>
+    <metric>current-infections</metric>
+    <metric>previous-infections</metric>
+    <enumeratedValueSet variable="high-resistance-multiplier">
+      <value value="0.008"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="low-resistance-multiplier">
+      <value value="0.002"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="human-capacity">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="min-symptoms-days">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="inital-mosquitoes-infected">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="max-symptoms-days">
+      <value value="22"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="hospital-visit-chance">
+      <value value="9"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="replacement-drug-days">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="malaria-generation-length">
+      <value value="400"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="recovery-chance">
+      <value value="67"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="duration">
+      <value value="130"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mosquito-min-age">
+      <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mosquitoes-capacity">
+      <value value="500"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="inital-humans-infected">
+      <value value="29"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="human-max-age">
+      <value value="22265"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="mosquito-max-age">
+      <value value="25"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="human-min-age">
+      <value value="10000"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
