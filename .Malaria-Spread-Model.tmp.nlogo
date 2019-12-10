@@ -397,7 +397,7 @@ to get-drugs
   ]
 end
 
-;; make the human consume one of the drugs they are holding
+;; m
 to consume-drugs
   ask humans with [ antimalarial-drug-count > 0 ] [
     if (antimalarial-drug-count = 1 and random 100 < drug-efficacy)   ;TODO change this to a better calculation based on age and drug resistance.
@@ -477,6 +477,17 @@ end
 to-report pregnant-mosquitoes-count
   report (count mosquitoes with [pregnant? = true])
 end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;Questions/Unknowns;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+; calculate drug resistance? preportion of infections treated by drug, number of malaria clones per number
 @#$#@#$#@
 GRAPHICS-WINDOW
 373
