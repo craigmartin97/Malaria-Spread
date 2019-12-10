@@ -1121,7 +1121,7 @@ Sample Models -> Biology -> Virus.
 
 ## CREDITS AND REFERENCES
 
-The primary research paper which inspired this work:
+
 Intensity of malaria transmission and the evolution of drug resistance - https://www.sciencedirect.com/science/article/pii/S0001706X05000847
 @#$#@#$#@
 default
