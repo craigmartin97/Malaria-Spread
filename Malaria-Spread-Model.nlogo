@@ -11,9 +11,9 @@ globals [
   humans-max-capacity ;; max num humans
   previous-infections ;; previous malaria number
   current-infections ;; current number of malaria infections
-  drug-efficacy ;; should be between 0 and 90%
-  count-human-natural-deaths
-  count-human-malaria-deaths
+  drug-efficacy ;; should be between 0 and 90%. This number reduces as Malaria becomes more resistant.
+  count-human-natural-deaths ;; tracking the number of natural human deaths.
+  count-human-malaria-deaths ;; tracking the number of human deaths by malaria.
 ]
 
 ;; for humans and mosquitoes
@@ -32,7 +32,6 @@ humans-own[
   time-to-symptoms ;; period of time before human recognises symptoms.
   thinks-infected? ;; does the human know that they are infected?
   antimalarial-drug-count
-  ;; TODO: immune-time? shoud we have an immune feature, where people cannot get malaria
 ]
 
 ;; mosquitoes agents only
@@ -44,7 +43,7 @@ mosquitoes-own[
 ;; initalize the interface and create enviroment
 to setup
   clear-all
-  set drug-efficacy 90 ;; TODO: maybe change later.
+  set drug-efficacy 90 ;; antimalarial drugs have a 90% chance of preventing and curing malaria.
   setup-global-vars
   create-world  ;;create humans and mosquitoes
   create-agents
@@ -618,7 +617,7 @@ BUTTON
 14
 231
 47
-Step
+step
 step
 NIL
 1
@@ -999,39 +998,131 @@ PENS
 @#$#@#$#@
 ## WHAT IS IT?
 
-(a general understanding of what the model is trying to show or explain)
+This model looks at a population of Humans and Mosquitoes and how Malaria can become resistant to drugs based on the frequency of a communities drug usage. Malaria is transmitted during the bloodfeeding process which female mosquitoes perform during pregnancy.
 
 ## HOW IT WORKS
 
-(what rules the agents use to create the overall behavior of the model)
+Other:
+- Each tick represents a time period of 1 day.
+- Drug efficacy is reduced every number of ticks defined by malaria-generation-length. If more infections occured in the previous generation of malaria, the low-resistance-multiplier is used. Else, the high-resistance-multiplier is used. The applied multiplier multiplied by the number of current infections is taken away from the drug efficacy.
+- Drug efficacy is reset to 90 every number of ticks defined by replacement-drug-days.
+
+Mosquitoes and Humans:
+- Will move to a random location each tick.
+- Can get pregnant and give birth.
+- Can get infected by Malaria.
+- Assigned a maximum lifespan at birth.
+- Age is tracked in days.
+- Coloured red when infected.
+
+Mosquitoes:
+- Coloured brown when not infected.
+- No more Mosquitoes can be hatched if >= 500 exist.
+- Will move to any location regardless of what is currently on a patch.
+- Female Mosquitoes, when pregnant, will bloodfeed on humans if they land on them.
+- During bloodfeeding, an infected Mosquito may infect the human.
+- During bloodfeeding, a healthy Mosquito may contract the disease if the human is infected.
+
+Humans:
+- Coloured green when not infected.
+- No more Humans can be hatched if >= 300 exist.
+- Will only move to empty patches (Mosquitoes move on top after).
+- Will visit the hospital if they know they are infected or randomly based on the hospital-visit-chance slider.
+- Upon visiting the hospital, gets 14 antimalarial drugs.
+- Once all antimalarial drugs are taken while infected, humans have a chance to be cured based on drug efficacy.
+- If bloodfed on by an infected mosquito, humans have a chance to avoid infection based on drug efficacy.
+- Upon infection, time-to-symptoms is assigned and the human will recognise that they have malaria after this many ticks pass.
+- Humans have a higher risk factor of dying to malaria if they are < 5 years old.
 
 ## HOW TO USE IT
 
-(how to use the model, including a description of each of the items in the Interface tab)
+Buttons:
+- setup	: Creates and assigns attributes of the Global Scope, Patches, Humans and Mosquitoes.
+- go	: Continuosly runs the simulation.
+- step	: Calls 'go' a single time.
+
+Sliders:
+- (human/mosquitoes)-capacity :	Sets the number of humans/mosquitoes to create upon 'setup'.
+- initial-(humans/mosquitoes)-infected : Sets the % of the created humans/mosquitoes to create as infected upon 'setup'.
+- recovery-chance : The chance that a human survives after they have been infected long enough to be killed by Malaria.
+- hospital-visit-chance : The chance that a human will visit the hospital for antimalarial drugs regardless of whether they are infected or not.
+- duration : The number of days before a Malarial infection becomes lethal to its host.
+
+Inputs:
+- (min/max)-symptoms-days : The range of days before symptoms can show up for an infected Human. A random number within this range is selected upon infection.
+- (min/max)-(mosquito/human)-age : The range of days that the turtles lifespan can be inbetween. A random number within this range is selected upon creation.
+- low-resistance-multiplier : The multiplier of resistance that is applied to the number of current-infections, if current-infections > previous-infections, when a new Malaria generation occurs.
+- high-resistance-multiplier : The multiplier of resistance that is applied to the number of current-infections, if current-infections > previous-infections, when a new Malaria generation occurs.
+- malaria-generation-length : The number of days representing how long it takes Malaria to evolve into a new generation with improved drug resistance.
+- replacement-drug-days : The number of days representing how long it takes a new antimalarial drug to be released.
+
+Monitors:
+- alive-(humans/mosquitoes)-count : Tracks the number of alive humans and mosquitoes.
+- male-(humans/mosquitoes)-count : Tracks the number of alive male humans and mosquitoes.
+- female-(humans/mosquitoes)-count : Tracks the number of alive female humans and mosquitoes.
+- pregnant-(humans/mosquitoes)-count : Tracks the number of alive pregnant humans and mosquitoes.
+- Healthy-Humans : Tracks the numer of alive, not infected, humans.
+- Infected (Humans/Mosquitoes) : Tracks the number of alive, infected, humans/mosquitoes.
+- drug-efficacy : The chance that antimalarial drug users will avoid an infection or be cured of an infection.
+- current-infections : The number of malaria infections created in the current malaria generation.
+- previous-infections : The number of malaria infections created in the previous malaria generation.
+- total-human-(natural/malaria)-deaths : The total number of human deaths by malaria or natural causes.
+
+Plots:
+- Drug Efficacy : View the drug efficacy throughout a simulation.
+- Populations : View the number of healthy/infected humans and the number of mosquitoes throughout a simulation.
+- Deaths : View the number of deaths by malaria and natural causes throughout a simulation.
 
 ## THINGS TO NOTICE
 
-(suggested things for the user to notice while running the model)
+There are three potential endings for the simulation:
+1. Human and Mosquito populations reach their capacity (300 and 500 respectively).
+2. The Human population gets low enough that the Mosquitoes can no longer bloodfeed and all die out. After this, the Human population will rebuild.
+3. The drug efficacy reduces heavily and both the Human and Mosquito populations get wiped out.
 
 ## THINGS TO TRY
 
-(suggested things for the user to try to do (move sliders, switches, etc.) with the model)
+Test configurations to try:
+Small duration, high recovery chance, low hospital visit chance
+Small duration low recovery chance, low hospital visit chance
+High duration low recovery chance, low hospital visit chance
+High duration, high recovery chance, low hospital visit chance
+Small duration, high recovery chance, high hospital visit chance
+Small duration low recovery chance, high hospital visit chance
+High duration low recovery chance, high hospital visit chance
+High duration, high recovery chance, high hospital visit chance
+
+Low initial humans infected, low initial mosquito infected
+high initial humans infected, high initial mosquito infected
+high initial humans infected, low initial mosquito infected
+Low initial humans infected, high initial mosquito infected
+
+
+Low min symptoms days, low max symptoms days, high duration
+Low min symptoms days, low max symptoms days, low duration
+
+Change lifespans
+Change resistance multipliers and malaria/drug lengths
+
 
 ## EXTENDING THE MODEL
 
-(suggested things to add or change in the Code tab to make the model more complicated, detailed, accurate, etc.)
+One issue with the model is that the Mosquito population will grow rapidly due to the number of eggs that they can hatch. Finding a way to balance the birthing rates without having to supply a hard limit could make the simulation more interesting.
 
-## NETLOGO FEATURES
+The paper referenced at the bottom of this Info page mentions that malaria can randomly mutate. Our model only allows for malaria to evolve over a fixed length but could be improved by varying this length and adding random mutations.
 
-(interesting or unusual features of NetLogo that the model uses, particularly in the Code tab; or where workarounds were needed for missing features)
+More risk factors should be introduced to the recover-or-die. Currently only young age is considered for the risk factor whereas more scienntifically proven risk factors could be included such as pregnancy and old age.
 
 ## RELATED MODELS
 
-(models in the NetLogo Models Library and elsewhere which are of related interest)
+We used the following two models to learn NetLogo and to find relevant functionality for this model:
+Sample Models -> Biology -> AIDS
+Sample Models -> Biology -> Virus.
 
 ## CREDITS AND REFERENCES
 
-(a reference to the model's URL on the web if it has one, as well as any other necessary credits, citations, and links)
+The primary research paper which inspired this work:
+Intensity of malaria transmission and the evolution of drug resistance - https://www.sciencedirect.com/science/article/pii/S0001706X05000847
 @#$#@#$#@
 default
 true
