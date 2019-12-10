@@ -1,0 +1,17 @@
+Malaria Model Notes - 
+
+Setting humans and mosquitoes inital values affected if the breeds would thrive or die out quickly.
+If humans are set low and mosquitoes set high, the mosquitoes stand a chance of all dying out or thriving due to the 
+bloodfeeding dependancy.
+
+If all humans start to die out, all of the mosquitoes will die out as well as they require to bloodfeed to reproduce.
+
+The further apart the malaria generation length and the replacement drug, the quicker the drug efficacy will reduce and 
+make the human population die.
+
+The more often the humans go to the hosptial to get drugs, the faster the drug efficacy reduces
+
+At the begining if more people are visiting the hospital, the drug efficacy reduces slower than if less people where.
+For example, if the hospital visit chance is set at 9 then at the begining the drug efficacy will reduce quicker than if 
+the hospital visit chance is set to 92.
+

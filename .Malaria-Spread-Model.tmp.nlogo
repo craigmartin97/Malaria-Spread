@@ -851,7 +851,7 @@ INPUTBOX
 170
 539
 malaria-generation-length
-200.0
+1000.0
 1
 0
 Number
@@ -865,7 +865,7 @@ hospital-visit-chance
 hospital-visit-chance
 0
 100
-6.0
+91.0
 1
 1
 NIL
@@ -877,7 +877,7 @@ INPUTBOX
 331
 538
 replacement-drug-days
-2000.0
+5000.0
 1
 0
 Number
@@ -2231,7 +2231,7 @@ NetLogo 6.0.1
     <metric>count humans</metric>
     <metric>count mosquitoes</metric>
     <metric>count-human-malaria-deaths</metric>
-    <metric>drug-efficacy</metric>
+    <metric>drug-eficacy</metric>
     <enumeratedValueSet variable="high-resistance-multiplier">
       <value value="0.008"/>
     </enumeratedValueSet>
